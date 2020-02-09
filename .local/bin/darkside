@@ -1,0 +1,81 @@
+#!/bin/bash -e
+
+# Help
+[ "${1}" == '--help' ] && exec cat << HELP
+
+${0} is my portable network music player.
+/Based on: bash, curl, sed, cat and mpv/
+
+Workflow:
+- Extract M3U links from LIST (default LIST is defined at the botoom of the script);
+- Filter links (default FLITERS are predefined);
+- Execute the PLAYER and pass filtered content to PLAYERs stdin.
+
+Environment (optional):
+: LIST    - filename with cURL --config syntax contens (/--config/ in man curl);
+: FILTERS - list with sed expression[s] (man sed);
+: PLAYER  - program path with arguments ready to process LIST from stdin.
+
+Examples:
+ ${0}                                  # Use defaults: LIST, FILTERS, PLAYER;
+ ${0} '/WarlocK/!d'                    # The same, but add custom filter;
+ LIST=~/Music/playlist.curl ${0}       # Redefine LIST location;
+ FILTERS='' ${0}                       # Disable predefined FILTERS;
+ PLAYER='mplayer --playlist - --' ${0} # Redefine PLAYER;
+
+HELP
+
+# Environment
+PLAYER="${PLAYER:-mpv --shuffle --playlist=- --}"
+LIST="${LIST:-${0}}"
+FILTERS="${FILTERS:-
+/^#\|^[[:space:]]*$/d
+/\/play_i\//d
+/(Live)/d
+/\/W\/WarlocK\/Live%20Steel%20At%20Donington%20(1986)/d
+/\/T\/Tarja\/.*Live%20In%20Kuusankoski/d
+/\/T\/Tarja\/Act%20I%20.Live%20.*%20CD.%20.2012./d
+/\/N\/Nightwish\/.*Live%20At%20/d
+/\/N\/Nightwish\/.*Live%20at%20/d
+/\/N\/Nightwish\/.*Live%20in%20/d
+}"
+
+# Functions
+function filterPlaylist {
+ sed -e "${@}"
+}
+
+# Get and filter Playlist
+
+PLAYLIST="$(
+ sed -e '1,/^########## M3U URLs below ##########$/d' "${LIST}"\
+ | curl -sK -\
+ | filterPlaylist "${FILTERS} $@"
+)"
+
+# DEBUG
+#cat -- <<< "${PLAYLIST}"
+
+# PLAY
+exec ${PLAYER} <<< "${PLAYLIST}"
+exit 1
+
+########## M3U URLs below ##########
+
+# Doro /Hard Rock, Heavy Metal, Soft-Rock/
+url http://darkside.cc/m3u/group/275
+
+#18 Summers /Synthpop/
+url http://darkside.cc/m3u/group/4
+
+#Nightwish /Opera Metal, Power Metal, Progressive/
+url http://darkside.cc/m3u/group/786
+
+#Tarja /Neo-Classical/
+url http://darkside.cc/m3u/group/2234
+
+#WarlocK /Heavy Metal/
+url http://darkside.cc/m3u/group/1163
+
+#Кино /Rock/
+url http://darkside.cc/m3u/group/265343

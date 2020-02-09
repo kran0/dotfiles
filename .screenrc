@@ -1,0 +1,42 @@
+#
+# ~/.screenrc startup file for GNU Screen.
+#
+
+startup_message off
+chdir                # Start in our home dir
+#unsetenv DISPLAY     # we're not graphical
+autodetach on         # Automatically detach on hangup.
+#defscrollback 100    # Change default scrollback value for new windows
+
+vbell on              # start with visual bell as default
+vbell_msg "bell on %t (%n)"
+activity "Activity in %t(%n)"
+
+# look and feel for the bottom two lines.
+#caption     always        "%{+b rk}%H%{gk} |%c %{yk}%d.%m.%Y | %72=Load: %l %{wk}"
+#hardstatus alwayslastline "%?%{yk}%-Lw%?%{wb}%n*%f %t%?(%u)%?%?%{yk}%+Lw%?"
+
+#  Toggle 'fullscreen' or not.
+#bind f eval "caption splitonly" "hardstatus ignore"
+#bind F eval "caption always"    "hardstatus alwayslastline"
+
+#shelltitle "shell"   # Shell title.
+#zombie cr            # Keep dead windows around until I tell them to exit.
+
+#
+# These keybindings always annoy me: xon/xoff.
+# Remove them.
+#
+#bind ^Q
+#bind q
+#bind ^S
+#bind s
+
+nonblock on           # If a window goes unresponsive, don't block the whole session waiting for it.
+
+# Run a screensaver if there's nothing happening for a while.
+#blankerprg /bin/sh /home/spo/.screen.saver
+#blankerprg cmatrix -a -f -n -u 10
+#idle 3600 eval "blanker"
+
+#shell "/bin/bash"

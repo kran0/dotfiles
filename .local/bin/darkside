@@ -41,6 +41,14 @@ FILTERS="${FILTERS:-
 }"
 
 # Functions
+function extractPlaylist {
+ sed -e '1,/^########## M3U URLs below ##########$/d' ${@}
+}
+
+function getPlaylist {
+ curl -sK -
+}
+
 function filterPlaylist {
  sed -e "${@}"
 }
@@ -48,8 +56,8 @@ function filterPlaylist {
 # Get and filter Playlist
 
 PLAYLIST="$(
- sed -e '1,/^########## M3U URLs below ##########$/d' "${LIST}"\
- | curl -sK -\
+ extractPlaylist "${LIST}"\
+ | getPlaylist\
  | filterPlaylist "${FILTERS} $@"
 )"
 

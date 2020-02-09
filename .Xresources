@@ -1,0 +1,65 @@
+
+! XTerm colours
+
+!XTerm Theme Six from http://linsovet.com/terminal-color-schemes-2
+XTerm*background: rgb:be/be/be
+XTerm*foreground: rgb:21/21/21
+XTerm*color0:     rgb:00/00/00
+XTerm*color1:     rgb:bf/72/76
+XTerm*color2:     rgb:86/af/80
+XTerm*color3:     rgb:96/8a/38
+XTerm*color4:     rgb:36/73/b5
+XTerm*color5:     rgb:9a/70/b2
+XTerm*color6:     rgb:7a/be/cc
+XTerm*color7:     rgb:db/db/db
+XTerm*color8:     rgb:66/92/af
+XTerm*color9:     rgb:e5/50/5f
+XTerm*color10:    rgb:87/bc/87
+XTerm*color11:    rgb:e0/d9/5c
+XTerm*color12:    rgb:1b/85/d6
+XTerm*color13:    rgb:ad/73/ba
+XTerm*color14:    rgb:33/8e/aa
+XTerm*color15:    rgb:f4/f4/f4
+
+XTerm*cursorColor: #00FF00
+!XTerm*highlightSelection:   true
+XTerm*colorUL: yellow
+XTerm*colorBD: white
+
+! XTerm settings
+
+XTerm*loginShell:        true
+XTerm*visualBell:        true
+XTerm*saveLines:         1000
+XTerm*selectToClipboard: true
+XTerm*allowSendEvents:   False
+XTerm*sessionMgt:        false
+XTerm*eightBitInput:     false
+XTermmetaSendsEscape:    true
+XTerm*internalBorder:    0
+
+!XTerm*VT100*colorBDMode:    on
+!XTerm*VT100*colorBD:        blue
+!XTerm.VT100.eightBitOutput: true
+!XTerm.VT100.titeInhibit:    false
+
+XTerm*ScrollBar:        false
+XTerm*TitleBar:         on
+XTerm*Border:           off
+XTerm*AllowIconInput:   on
+!Xterm*termtype:         vt100
+!XTerm*Title:            X Terminal
+!Xterm*none:             on
+XTerm*clientDecoration: none
+
+XTerm*faceName:     XFree86-Bigfont
+XTerm*faceSize:     18
+!XTerm*geometry: 100x24+517+375
+
+!Special selectng for N clicks
+XTerm*on3Clicks: regex ([[:alpha:]]+:\/\/)?([[:alnum:]!#+,./=?@_~-]|(%[[:xdigit:]][[:xdigit:]]))+
+!XTerm*on4Clicks: regex ...
+!XTerm*on5Clicks: regex ...
+
+!Use string from clipboard (after selection) in external program
+*VT100*translations: #override Shift <Btn2Up>: exec-formatted("firefox '%t'", CLIPBOARD)

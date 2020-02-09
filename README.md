@@ -11,15 +11,9 @@ Some say it is not secure. It is my life, who cares?
 ## You have to install depencies:
 ```
 dnf install\
-    dmenu\
-    mpv\
-    openssh\
-    openssh-clients\
-    pmenu\
-    screen\
-    xterm
+    cmatrix cowsay dmenu mpv openssh openssh-clients pmenu psmisc screen xterm
 ```
-[//]: <> ( echo [ list ] | sed -e 's/[[:space:]]\{1,\}/\\\n    /g' | sort -u )
+[//]: <> ( echo [ list ] | tr ' ' '\n' | sort -u | tr '\n' ' ' )
 
 ## My favorite /custom executables/
 : [lsrs](.local/bin/lsrs) - LSRS is s cool script to use GNU Screen to manage remote systems, which cannot run GNU Screen.
@@ -72,3 +66,13 @@ They really changed my life.
   - *TODO* write about them;
   - *TODO* rethink ssh-* elements before publishing them;
   - Rethink about [ssh-EXAMPLE](.local/etc/menu.d/items-avalible/ssh-EXAMPLE) .
+
+# Wonderful invention #2 OpenSSH client + menu
+I really love [OpenSSH](https://www.openssh.com/).
+It is really good, that [OpenBSD](https://www.openbsd.org/) made it free.
+Some would say it is simple, I'd say it is really not simple.
+I have changed my mind while reading manpages for:
+ ```ssh```, ```ssh_config```, ```scp```, ```sftp```, ```ssh-add```,
+```ssh-keysign```, ```ssh-keyscan```, ```ssh-keygen```, ```sshd```,
+```sshd_config```, ```sftp-server```, and ```ssh-agent```.
+You can unterstand a lot about Computer Science just while reading some manpages, please do. It is very interesting and helpful.

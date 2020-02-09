@@ -1,0 +1,35 @@
+#!/bin/sh -e
+
+GIT_REPO="${REPO:-https://github.com/kran0/dotfiles.git}"
+CHECKOUT="${CHECKOUT:-master}"
+DEST_DIR="${DEST_DIR:-${HOME}}"
+
+TEMP_DIR="$(mktemp --directory)"
+trap "rm -rf ${TEMP_DIR}" EXIT
+
+function selectDifferent {
+ diff -rq . "${DEST_DIR}"\
+  | sed -ne 's|Files \.\(.*\) differ$|.\1|p'
+}
+
+function interactCopy {
+ set +e -x
+  diff "${1}" "${2}"
+  cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
+}
+
+pushd "${TEMP_DIR}"
+
+ git init .
+ git remote add -t \* -f origin "${GIT_REPO}"
+ git checkout "${CHECKOUT}"
+
+ IFS=$'\n'
+ for pair in $(selectDifferent)
+ do
+  interactCopy "${pair// and */}" "${pair//* and /}"
+ done
+
+popd
+
+ find "${DEST_DIR}" -name '*~[0-9]*~' -exec echo rm {} \;

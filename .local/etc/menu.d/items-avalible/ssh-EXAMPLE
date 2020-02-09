@@ -1,0 +1,17 @@
+# EXAMPLE 1: simple connect to remote ssh server
+exec ssh $SSH_PARAMETERS user@host
+
+# EXAMPLE 2: connect to remote ssh server with remote screen session
+exec ssh $SSH_PARAMETERS user@host -t screen -D -R -S services -O
+exec ssh $SSH_PARAMETERS user@host -t screen -D -R -S spo-book.localdomain-screen -O
+
+# EXAMPLE 3: connect to remote ssh using Jump ssh server
+# manage Jump servers in ~/.ssh/config:
+exec ssh root@Gip-router0
+
+# EXAMPLE 4: connect to remote ssh using local screen multiplexor
+#!/usr/bin/env lsrs
+
+# Using LSRS (Local Screen Remote Shell) executable as sha-bang
+# Using ControlMaster=auto for single connection sharing
+exec ssh -o ControlMaster=auto root@Gip-router0

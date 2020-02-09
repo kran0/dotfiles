@@ -1,0 +1,11 @@
+#!/bin/sh
+
+TIMEOUT="${1:-30}"
+#xset s activate
+xset dpms force off
+sleep "${TIMEOUT}"
+
+xset dpms q\
+ | tail --lines=1\
+ | grep -q '^  Monitor is On$'\
+ && exec ${0} "$(($TIMEOUT+30))"

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec screen -DRO -S $HOSTNAME-screen -s '/bin/bash'

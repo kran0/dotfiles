@@ -1,0 +1,11 @@
+#!/bin/sh
+
+[ "$_" == "$0" ]\
+ && echo "Do not run ${0} directly, it must be sourced from another script!
+
+USAGE:
+. ${0}
+source ${0}
+"
+
+export SHELL=$(getent passwd "${LOGNAME}" | cut -d: -f7)

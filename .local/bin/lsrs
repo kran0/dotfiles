@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Local Screen - Remote Shell
+# call: #!/usr/bin/env lsrs
+
+if [ -z "$PRG" ]
+then
+ export PRG=$(realpath $1) MSG=$(basename "$1")
+ . "$HOME/.local/etc/lsrsd.conf"
+ exec screen -s $0 -S $MSG -qDRO
+fi
+
+export SHELL=$(getent passwd $LOGNAME | cut -d: -f7)
+echo -ne '\033k'$MSG'\033\\'
+
+. $PRG

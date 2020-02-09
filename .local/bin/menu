@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. "${HOME}/.local/etc/restore-default-shell" # set $SHELL
+
+. "${HOME}/.local/etc/menu.conf"             # set $MENU_D
+MENU_P=${MENU_P:-Menu} # Set Menu prompt. One word only!
+MENU_EXCTBL="dmenu -l 10 -p ${MENU_P} -fn *-50-*"
+# If the X server is not reachable
+[[ ! $(xset -q) ]] && MENU_EXCTBL="pmenu -n ${MENU_P}"
+
+function runSelectedEntry {
+ command="${1}"
+ echo -ne '\033k'${command}'\033\\'
+ exec ${command}
+}
+
+pushd ${MENU_D}
+ runSelectedEntry "$(find ./ -maxdepth 1 -executable -follow -type f | ${MENU_EXCTBL})"
+popd

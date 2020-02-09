@@ -1,0 +1,16 @@
+#!/bin/sh
+
+TCPSOCKETS='/proc/net/tcp'
+# SYNTAX:
+#     sl: local_address rem_address  st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode
+PORT='5500'
+PORT_SEEK=$(echo "obase=16; ${PORT}" | bc) #DEC -> HEX
+STATE_SEEK=0A # 0A - LISTEN
+while true
+ do
+  grep "${PORT_SEEK} 00000000:0000 ${STATE_SEEK}" ${TCPSOCKETS} > /dev/null || (
+   vncviewer -listen ${PORT} -RemoteResize -DotWhenNoCursor -Log *:stdout:30 &
+  )
+ read -n 1 -p . -t 5
+ done
+}

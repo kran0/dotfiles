@@ -1,0 +1,11 @@
+#!/bin/sh
+
+export PYTHONPATH=$HOME/.local/lib/python
+
+SCREEN=(
+ "clock"
+ )
+SCREEN=${SCREEN[RANDOM%${#SCREEN[@]}]}
+#SCREEN="rssfeed --url http://vc.tom.ru/news/?rss"
+
+exec termsaver $SCREEN

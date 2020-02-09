@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export PERL5LIB=$HOME/.local/lib/perl5
+exec asciiquarium

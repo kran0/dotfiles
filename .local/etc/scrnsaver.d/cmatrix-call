@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#exec cmatrix -a -f -n -u 10
+exec cmatrix -abfsu 10

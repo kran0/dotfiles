@@ -1,0 +1,23 @@
+#!/bin/sh
+
+TEXT=$*
+TEXTSELECT=(
+ "$(sensors --no-adapter | sed -e 's/(.*//')"
+ "$(echo 'This system is running since' ;uptime --since)"
+ "$(echo 'This system is ' ;uptime --pretty)"
+ "$(uname -a)"
+ "$(echo 'I am '; whoami)"
+ )
+[ "$1" == "" ] && TEXT=${TEXTSELECT[RANDOM%${#TEXTSELECT[@]}]}
+
+MODE=( -b -d -g -p -s -t -w -y )
+MODE="${MODE[RANDOM%${#MODE[@]}]}"
+
+PICTURE=( /usr/share/cowsay/*.cow )
+PICTURE="${PICTURE[RANDOM%${#PICTURE[@]}]}"
+
+ACTION=( cowsay cowthink )
+ACTION="${ACTION[RANDOM%${#ACTION[@]}]}"
+
+$ACTION -W 77 $MODE -f $PICTURE "$TEXT"
+read -n 1 -s

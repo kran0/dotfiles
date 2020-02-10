@@ -65,7 +65,7 @@ PLAYLIST="$(
 )"
 
 # DEBUG
-exec cat -- <<< "${PLAYLIST}"
+#exec cat -- <<< "${PLAYLIST}"
 
 # PLAY
 exec ${PLAYER} <<< "${PLAYLIST}"

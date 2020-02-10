@@ -31,14 +31,17 @@ LIST="${LIST:-${0}}"
 FILTERS="${FILTERS:-
 /^#\|^[[:space:]]*$/d
 /\/play_i\//d
-/(Live)/d
-/\/W\/WarlocK\/Live%20Steel%20At%20Donington%20(1986)/d
-/\/T\/Tarja\/.*Live%20In%20Kuusankoski/d
-/\/T\/Tarja\/Act%20I%20.Live%20.*%20CD.%20.2012./d
-/\/N\/Nightwish\/.*Live%20At%20/d
-/\/N\/Nightwish\/.*Live%20at%20/d
-/\/N\/Nightwish\/.*Live%20in%20/d
+/([Ll]ive/d
+/\[[Ll]ive/d
+/\/Live%20[Ii]n/d
+/\/Live%20[Aa]t/d
+/\/T\/Tarja\/Act%20I%20.Live%20...%20CD.%20.2012./d
+/\/M\/Metallica\/Cliff.s%20Last%20Gig/d
+/\/M\/Metallica\/Bilbao%20BBK%20Live%20Festival/d
+/\/Q\/Queen\/At%20The%20BBC/d
 }"
+
+# debug: ./darkside | sed -e 's/^.*_music\//\//' | sort | grep --text -i live
 
 # Functions
 function extractPlaylist {
@@ -62,7 +65,7 @@ PLAYLIST="$(
 )"
 
 # DEBUG
-#cat -- <<< "${PLAYLIST}"
+exec cat -- <<< "${PLAYLIST}"
 
 # PLAY
 exec ${PLAYER} <<< "${PLAYLIST}"

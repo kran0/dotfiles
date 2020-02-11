@@ -4,8 +4,8 @@
 # Go use it for other tool, just create symbolic links.
 
 function execFilter {
-    [ -z "${1}" ] && return 1
-    env "${1}" 2> /dev/null && exec "${1}" --
+    [ -z "${1}" ]    && exec cat
+    "${1}" /dev/null && exec "${1}" --
     shift
     execFilter $@
 }
@@ -21,4 +21,4 @@ function runCommand {
 
 }
 
-execFilter less more cat <<< $(runCommand "${0}" ${@})
+execFilter more less <<< $(runCommand "${0}" ${@})

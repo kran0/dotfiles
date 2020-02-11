@@ -21,4 +21,4 @@ function runCommand {
 
 }
 
-execFilter more less <<< $(runCommand "${0}" ${@})
+execFilter more <<< $(runCommand "${0}" ${@})

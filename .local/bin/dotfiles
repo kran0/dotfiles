@@ -13,9 +13,11 @@ function selectDifferent {
 }
 
 function interactCopy {
+(
  set +e -x
   diff "${1}" "${2}"
   cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
+)
 }
 
 pushd "${TEMP_DIR}"
@@ -32,4 +34,5 @@ pushd "${TEMP_DIR}"
 
 popd
 
- find "${DEST_DIR}" -name '*~[0-9]*~' -exec echo rm {} \;
+# auto delete old copies.
+ find "${DEST_DIR}" -mtime +60 -name '*~[0-9]*~' -exec echo rm {} \;

@@ -11,7 +11,7 @@ Some say it is not secure. It is my life, who cares?
 ## You have to install depencies:
 ```
 dnf install\
-    cmatrix cowsay dmenu mpv openssh openssh-clients psmisc screen xterm git
+    cmatrix cowsay go dmenu mpv openssh openssh-clients psmisc screen xterm git
 ```
 [//]: <> ( echo [ list ] | tr ' ' '\n' | sort -u | tr '\n' ' ' )
 

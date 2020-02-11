@@ -11,13 +11,14 @@ function execFilter {
 }
 
 function runCommand {
-    key="${1//*.\//}" # get only last word
+    key="${1//*\//}" # get only last word
     shift
 
     case "${key}" in
      'godoc' ) go doc $@ ;;
-     *       ) echo 'unknown COMMAND' ::
+     *       ) echo 'unknown COMMAND' ;;
     esac
+
 }
 
 execFilter less more cat <<< $(runCommand "${0}" ${@})

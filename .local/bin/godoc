@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Godoc is a simple on-screen filter for go doc.
-# Go use it for other tool, just create symbolic links.
+# Go use it for other tool, just create a link.
 
 function execFilter {
-    [ -z "${1}" ]    && exec cat
-    "${1}" /dev/null && exec "${1}" --
+    [ -z "${1}" ] && exit 1
+    exec "${1}" --
     shift
     execFilter $@
 }
@@ -16,9 +16,8 @@ function runCommand {
 
     case "${key}" in
      'godoc' ) go doc $@ ;;
-     *       ) echo 'unknown COMMAND' ;;
+     *       ) echo "Cannot interpret: ${key}" ;;
     esac
-
 }
 
-execFilter more <<< $(runCommand "${0}" ${@})
+execFilter $(type -ap more less cat) <<< $(runCommand "${0}" ${@})

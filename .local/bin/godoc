@@ -20,4 +20,4 @@ function runCommand {
     esac
 }
 
-execFilter $(type -ap more less cat) <<< $(runCommand "${0}" ${@})
+execFilter $(type -ap less more cat) <<< $(runCommand "${0}" ${@})

@@ -12,6 +12,9 @@ Some say it is not secure. It is my life, who cares?
 ```
 dnf install\
     cmatrix cowsay go dmenu mpv openssh openssh-clients psmisc screen xterm git
+
+go get github.com/{alecthomas/gometalinter,/mdempsky/gocode}
+go get golang.org/x/tools/cmd/guru
 ```
 [//]: <> ( echo [ list ] | tr ' ' '\n' | sort -u | tr '\n' ' ' )
 

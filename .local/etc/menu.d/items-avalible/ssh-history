@@ -1,0 +1,23 @@
+#!/bin/sh
+
+HOSTS_CACHE="${HOME}/.cache/ssh-history.cache"
+MENU_EXCTBL="dmenu -l 15 -p $(basename $0) -fn *-50-*"
+SELECTED_SERVER="$(known_hosts | ${MENU_EXCTBL} | sed -e 's/,.*$//')"
+[ -z "${SELECTED_SERVER}" ] && exit 0
+
+echo "${SELECTED_SERVER}" >> "${HOSTS_CACHE}"
+echo -ne '\033k'root@${SELECTED_SERVER}'\033\\'
+SESSION_FILE="/tmp/lsrs-$(echo ${SELECTED_SERVER} | sha256sum | cut -f1 -d' ')"
+NUMBER=$(($(awk '!seen[$0]++' ${HOSTS_CACHE} | tail --lines=90 | sort | grep --line-number "^${SELECTED_SERVER}$" | sed -ne 's/^\([0-9]\{1,\}\)\:.*$/\1/p;q')+9)) #"'
+[ "${NUMBER}" -gt 9 ] && screen -S "${HOSTNAME}-tabber" -Q number "${NUMBER}"
+
+[ -e "${SESSION_FILE}" ] || (
+cat >"${SESSION_FILE}" <<EOF
+#!/usr/bin/env lsrs
+
+exec ssh "root@${SELECTED_SERVER}"
+EOF
+chmod +x ${SESSION_FILE}
+)
+
+"${SESSION_FILE}"

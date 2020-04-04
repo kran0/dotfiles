@@ -3,4 +3,4 @@
 #https://github.com/erroneousboat/slack-term/wiki#running-slack-term-without-legacy-tokens
 
 exec podman run -it --rm\
- -v ${HOME}/.slack/config_secret:/config erroneousboat/slack-term
+ -v ${HOME}/.config/slack/config_secret:/config erroneousboat/slack-term

@@ -5,9 +5,13 @@
 	],
 	"installed_packages":
 	[
+		"Gofmt",
 		"GoGuru",
+		"Golang Build",
 		"Package Control",
 		"PackageResourceViewer",
-		"SublimeLinter-contrib-gometalinter"
+		"Pretty JSON",
+		"SublimeLinter-contrib-gometalinter",
+		"Terminus"
 	]
 }

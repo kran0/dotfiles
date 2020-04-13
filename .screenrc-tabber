@@ -8,6 +8,7 @@ chdir                 # Start in our home dir
 autodetach on         # Automatically detach on hangup.
 nonblock on           # If a window goes unresponsive, don't block the whole session waiting for it.
 escape ^Bb
+#shell "menu"
 
 vbell on              # start with visual bell as default
 vbell_msg "bell on %t (%n)"

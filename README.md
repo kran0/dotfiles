@@ -11,7 +11,7 @@ Some say it is not secure. It is my life, who cares?
 ## You have to install depencies:
 ```
 dnf install\
-    cmatrix cowsay go dmenu mpv openssh openssh-clients psmisc screen xterm git
+    cmatrix cowsay dmenu git go mpv openssh openssh-clients psmisc screen x11vnc xterm
 
 go get github.com/{alecthomas/gometalinter,/mdempsky/gocode}
 go get golang.org/x/tools/cmd/guru

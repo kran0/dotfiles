@@ -1,0 +1,7 @@
+#!/bin/sh
+
+#x11vnc --help\
+# | grep -c ''\
+# || sudo dnf -y install x11vnc
+
+exec x11vnc -connect "${VIEWER:-localhost}"

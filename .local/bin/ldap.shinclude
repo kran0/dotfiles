@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#CREDS="${HOME}/.ldaps.creds"
+CREDS="${HOME}/.ldaps.creds~admin"
+LS_ATTR="-E pr=564788199423/noprompt -o ldif-wrap=no"
+
+function parseOutput {
+ perl -MMIME::Base64 -pe '
+  s/^(\w+):: (.+)$/$1 . ":: " . $2 . "\n" . $1 . ": " . decode_base64($2)/e
+ '
+}
+
+function parseInput {
+ perl -MMIME::Base64 -pe '
+ sub delete_newlines {
+    my $line = shift;
+#    $line =~ s/\R//g;
+    $line =~ s/\n//g;
+    return $line;
+ };
+
+ s/^(\w+)::: (.+)$/$1 . ":: " . delete_newlines(encode_base64($2))/e
+ '
+}
+
+function getLine {
+ echo -n $(sed -ne "${1}p" "${2}")
+}

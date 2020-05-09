@@ -1,0 +1,48 @@
+#!/bin/bash
+
+. $(dirname $0)/ldap.shinclude
+
+[ "${1}" = "--help" ] && exec cat <<HELP
+# Add LDIF object to LDAP.
+
+# Example run:
+    ldapa file1.ldif [ldapa file2.ldif .. [file3.ldif]]
+    LDIF_generator | ldapa
+
+# File.ldif  must contains LDIF objects delimited by empty line.
+# NB: use "filed::: Значение русскими буквами" to auto-convert local symbols to base64.
+
+## organizationalUnit.ldif example:
+dn: OU=Depart,OU=Unit,OU=Org,OU=ZONE,OU=Project,DC=Compaly,DC=domain,DC=example
+objectClass: organizationalUnit
+ou: Depart
+
+## security universal group
+distinguishedName: CN=nnSU-Project-APP-ZONE-Name,OU=Depart,OU=Unit,OU=Org,OU=ZONE,OU=Project,DC=Compaly,DC=domain,DC=example
+cn: nnSU-Project-APP-ZONE-Name
+name: nnSU-Project-APP-ZONE-Name
+description::: Название департамента в UTF8
+objectClass: top
+objectClass: group
+instanceType: 0
+groupType: -2147483640
+
+### groupType magic numbers
+
+| Value       | groupType |
+|:------------|:----------|
+| 2           | Global distribution group       |
+| 4           | Domain local distribution group |
+| 8           | Universal distribution group    |
+| -2147483646 | Global security group       |
+| -2147483644 | Domain local security group |
+| -2147483640 | Universal security group    |
+| -2147483643 | BuiltIn Group               |
+
+HELP
+
+ldapadd\
+ -y  <(getLine 1 ${CREDS})\
+ -D "$(getLine 2 ${CREDS})"\
+     $(getLine 3 ${CREDS})\
+ -f <(cat ${@} | parseInput)

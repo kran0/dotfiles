@@ -1,0 +1,29 @@
+#!/bin/bash
+
+. $(dirname $0)/ldap.shinclude
+
+[ "${1}" = "--help" ] && exec cat <<HELP
+# Default run DC="dc=company,dc=domain,dc=example" ldaps "(objectclass=*)"
+    ldaps
+
+# Change DC and (or) request
+    DC="dc=company,dc=domain,dc=example" ldaps "cn=nnUserName"
+    DC="dc=company,dc=domain,dc=example" ldaps "cn=nnUserName" telephoneNumber mail # certain attributes
+    DC="dc=company,dc=domain,dc=example" ldaps "cn=nnUserName" * # all attributes
+    DN="dc=company,dc=domain,dc=example" ldaps "sAMAccountName=nn*" cn telephoneNumber
+
+# Usefull requests
+  ldaps "(objectclass=*)"				#
+  ldaps "(objectClass=group)"				# Groups
+  ldaps "(objectClass=group)" distinguishedName		# Groups distinguishedNames
+  ldaps "(objectClass=group)" dn			# Groups distinguishedNames
+HELP
+
+ldapsearch\
+ -y  <(getLine 1 ${CREDS})\
+ -D "$(getLine 2 ${CREDS})"\
+     $(getLine 3 ${CREDS})\
+ ${LS_ATTR}\
+ -b ${DC:-"dc=company,dc=domain,dc=example"}\
+ -s sub ${*:-'(objectclass=*)'} \
+ | parseOutput

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo 'mkdir ${HOME}/.ssh'
+echo "echo $(cat ${HOME}/.ssh/id_rsa.pub)"' >> ${HOME}/.ssh/authorized_keys'
+echo 'chmod go-w ${HOME} ${HOME}/.ssh ${HOME}/.ssh/authorized_keys'

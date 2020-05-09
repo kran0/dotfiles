@@ -11,7 +11,11 @@ Some say it is not secure. It is my life, who cares?
 ## You have to install depencies:
 ```
 dnf install\
-    cmatrix cowsay dmenu git go mpv openssh openssh-clients psmisc screen x11vnc xterm
+    akmods ansible broadcom-wl cmatrix cowsay dia dmenu firefox fuse-sshfs git \
+    go kernel-devel libreoffice lm_sensors mbpfan mc mpv nmap-ncat openssh \
+    openssh-clients perl-Curses podman podman-compose psmisc \
+    pulseaudio-module-bluetooth remmina remmina-* screen sublime-text \
+    telegram-desktop tigervnc torsocks virt-manager x11vnc xterm youtube-dl
 
 go get github.com/{alecthomas/gometalinter,/mdempsky/gocode}
 go get golang.org/x/tools/cmd/guru

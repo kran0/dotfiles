@@ -10,12 +10,21 @@ Some say it is not secure. It is my life, who cares?
 
 ## You have to install depencies:
 ```
+# Macbook depencies
 dnf install\
-    akmods ansible broadcom-wl cmatrix cowsay dia dmenu firefox fuse-sshfs git \
-    go kernel-devel libreoffice lm_sensors mbpfan mc mpv nmap-ncat openssh \
-    openssh-clients perl-Curses podman podman-compose psmisc \
-    pulseaudio-module-bluetooth remmina remmina-* screen sublime-text \
-    telegram-desktop tigervnc torsocks virt-manager x11vnc xterm youtube-dl
+    akmods broadcom-wl kernel-devel mbpfan
+
+# Weak depencies
+dnf install\
+    ansible cowsay dia firefox go libreoffice lm_sensors mc mpv nmap-ncat \
+    openssh podman podman-compose psmisc pulseaudio-module-bluetooth remmina \
+    remmina-* sublime-text telegram-desktop tigervnc virt-manager x11vnc\
+    youtube-dl
+
+# Main depencies
+dnf install\
+    cmatrix dmenu fuse-sshfs git go openssh-clients perl-Curses screen xterm \
+    youtube-dl
 
 go get github.com/{alecthomas/gometalinter,/mdempsky/gocode}
 go get golang.org/x/tools/cmd/guru
@@ -41,18 +50,24 @@ I adore XTerm. XTerm is perfect Terminal emulator. Thank you, [Thomas Dickey](ht
 - [.Xresources](.Xresources) contains configuration for X apps, in my case mostly for XTerm;
 - [XTerm.sh](.local/bin/XTerm.sh) may be the only link on your panel, desktop, etc. It starts XTerm, who needs more?;
 - Before starting XTerm, XTerm.sh is sourcing [ssh-agent-call](.local/etc/ssh-agent-call) to check if ssh-agent is running;
-- Finally Xterm.sh executes XTerm with GNU Screen _tabber_:
+- Finally Xterm.sh executes XTerm with GNU Screen _workspace_ with first workspace named local _tabber_:
   - yes it re-defines the shell to the [menu](.local/bin/menu) program ```-s menu```;
-  - and uses some GNU Screen's magic to reconnect to existing session or create new one.
+  - and uses some GNU Screen's magic to reconnect to existing sessions or create new ones.
 
 I adore [GNU Screen](https://www.gnu.org/software/screen/) and [The GNU Project](https://www.gnu.org/software/screen/).
 They really changed my life.
 /Who knows what would our world be without Richard Stallman's ideas?/
-- Usually i run shell in GNU Screen, and GNU Screen in .. Another GNU Screen. And eventually I use top 3rd level GNU Screen instance to *rule them all*;
-- XTerm starts GNU Screen _tabber_ with [.screenrc-tabber](.screenrc-tabber) config file:
-  - it is responsible for "tabs". Eg: top level window manager for XTerm. Every "tab" is usually another with GNU Screen running (if local "tab") or OpenSSH client connection with GNU Screen running on remote;
+- Usually i run shell in GNU Screen, and GNU Screen in .. Another GNU Screen. Actually I use top 3rd level GNU Screen instance (_workspace_) to *rule them all*;
+- XTerm starts GNU Screen _workspace_ with [.screenrc-workspace](.screenrc-workspace) config file:
+  - it is used to switch between remre and local _tabbers_ workspaces;
+  - it have special (non-default) ecape sequence: ```escape ^Ee```. So, to change the "workspace" you are to use Ctrl+e instead of the default;
+  - it is also responsible for the bell, hardstatus, blankerprg and other communications with XTerm;
+  - it starts first local workspace named "local" _tabber_;
+  - it uses [menu](.local/bin/menu) instead of the shell, so instead of running shell in the new window (```Ctrl+e Ctrl+c```), it will run ```menu``` in new window;
+- _Tabbers_ are wokrspaces (local or remote) with configs like [.screenrc-tabber](.screenrc-tabber):
+  - it is responsible for "tabs". Eg: workspace level window manager for XTerm. Every "tab" is usually another with GNU Screen running (if local "tab") or OpenSSH client connection with GNU Screen running on remote;
   - it have special (non-default) ecape sequence: ```escape ^Bb```. So, to change the "tab" you are to use Ctrl+b instead of the default;
-  - it is also responsible for the bell, hardstatus, blankerprg and other communications with XTerm.
+  - it is also responsible for the bell, hardstatus and other communications with XTerm.
   - it uses [menu](.local/bin/menu) instead of the shell, so instead of running shell in the new window (```Ctrl+b Ctrl+c```), it will run ```menu``` in new window;
 
 [Menu](.local/bin/menu) is a script to manage some elements:

@@ -8,14 +8,16 @@ TEMP_DIR="$(mktemp --directory)"
 trap "rm -rf ${TEMP_DIR}" EXIT
 
 function selectDifferent {
- diff -rq . "${DEST_DIR}"\
+ diff -rq --no-dereference . "${DEST_DIR}"\
   | sed -ne 's|Files \.\(.*\) differ$|.\1|p'
 }
 
 function interactCopy {
 (
  set +e -x
+ tput bold
   diff "${1}" "${2}"
+ tput sgr0
   cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
 )
 }

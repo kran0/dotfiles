@@ -2,6 +2,7 @@
 
 TIMEOUT="${1:-30}"
 #xset s activate
+sleep 1
 xset dpms force off
 sleep "${TIMEOUT}"
 

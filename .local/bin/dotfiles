@@ -14,19 +14,28 @@ function selectDifferent {
 
 function interactCopy {
 (
- set +e -x
- tput bold
-  diff "${1}" "${2}"
+ set +e #-x
+ tput -S <<COLOURS
+bold
+setaf 1
+COLOURS
+ echo "          ${1}":
+ tput setaf 0
+  diff --side-by-side --width=79 --label LABEL "${1}" "${2}"
  tput sgr0
   cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
 )
 }
 
-pushd "${TEMP_DIR}"
+pushd "${TEMP_DIR}" 1>/dev/null 2>/dev/null
 
+echo " --- Looking for difference between ${GIT_REPO} (${CHECKOUT}) and ${DEST_DIR} ---"
+
+(
  git init .
  git remote add -t \* -f origin "${GIT_REPO}"
  git checkout "${CHECKOUT}"
+) 1>/dev/null 2>/dev/null
 
  IFS=$'\n'
  for pair in $(selectDifferent)
@@ -34,7 +43,7 @@ pushd "${TEMP_DIR}"
   interactCopy "${pair// and */}" "${pair//* and /}"
  done
 
-popd
+popd 1>/dev/null 2>/dev/null
 
 # auto delete old copies.
- find "${DEST_DIR}" -mtime +60 -name '*~[0-9]*~' -exec echo rm {} \;
+ find "${DEST_DIR}" -mtime +60 -name '*~[0-9]*~' -exec rm {} \;

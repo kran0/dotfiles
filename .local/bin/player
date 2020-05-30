@@ -1,0 +1,24 @@
+#!/bin/sh -x
+
+# $0 - mpv wrapper
+# increases range of mpv standard EXIT CODES (currentl inly 4) to use in scripts
+# parce stdout line, return the code based on the text
+
+DEBUG_ENABE=${DEBUG_ENABLE:-false}
+
+function trapExit {
+
+ mpvExitCode="$(sed -ne '$s/^EXIT CODE: //p' ${@})"
+
+ grep -qaF 'Exiting... (End of file)' ${@} && rm -f ${@} && return 101
+ grep -qaF 'Saving state.' ${@}            && rm -f ${@} && return 102
+
+ rm -f $@
+ return ${mpvExitCode}
+#[ "${DEBUG_ENABE}" '!=' 'false' ] && echo debug
+}
+
+TMP_LOG="$(mktemp --suffix=-player)"
+trap 'trapExit "${TMP_LOG}"; exit ${?}' EXIT
+
+(mpv ${@}; echo "EXIT CODE: ${?}") | tee "${TMP_LOG}"

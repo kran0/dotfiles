@@ -30,4 +30,4 @@ function trapExit {
 TMP_LOG="$(mktemp --suffix=-player)"
 trap 'trapExit "${TMP_LOG}"; exit ${?}' EXIT
 
-(mpv "${@}"; echo "EXIT CODE: ${?}") | tee "${TMP_LOG}"
+(${TORIFY} mpv "${@}"; echo "EXIT CODE: ${?}") | tee "${TMP_LOG}"

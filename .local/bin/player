@@ -12,8 +12,8 @@ function trapExit {
  mpvExitCode="$(sed -ne '$s/^EXIT CODE: //p' ${@})"
  customExitCode="${mpvExitCode:-0}"
 
- grep -qaF 'Exiting... (End of file)' ${@} && customExitCode='101'
- grep -qaF 'Saving state.' ${@}            && customExitCode='102'
+ grep -qaF '][i][cplayer] Exiting... (End of file)' ${@} && customExitCode='101'
+ grep -qaF '][i][cplayer] Saving state.'            ${@} && customExitCode='102'
 
  [ "${DEBUG_ENABE}" '!=' 'false' ] && (
   case "${customExitCode}" in
@@ -30,4 +30,5 @@ function trapExit {
 TMP_LOG="$(mktemp --suffix=-player)"
 trap 'trapExit "${TMP_LOG}"; exit ${?}' EXIT
 
-(${TORIFY} mpv "${@}"; echo "EXIT CODE: ${?}") | tee "${TMP_LOG}"
+${TORIFY} mpv --log-file="${TMP_LOG}" "${@}"
+echo "EXIT CODE: ${?}" >> "${TMP_LOG}"

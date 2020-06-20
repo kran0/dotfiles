@@ -30,5 +30,5 @@ function trapExit {
 TMP_LOG="$(mktemp --suffix=-player)"
 trap 'trapExit "${TMP_LOG}"; exit ${?}' EXIT
 
-${TORIFY} mpv --log-file="${TMP_LOG}" "${@}"
+mpv --log-file="${TMP_LOG}" "${@}"
 echo "EXIT CODE: ${?}" >> "${TMP_LOG}"

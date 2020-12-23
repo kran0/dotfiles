@@ -26,6 +26,12 @@ Examples:
 HELP
 
 # Environment
+if [ "${0##*.}" == "onion" ]
+then
+ # if ${0} is darkside.onion
+ NETWORK_MODE='onion'
+ EXEC_WRAPPER='torify'
+fi
 PLAYER="${PLAYER:-mpv --shuffle --playlist=- --}"
 LIST="${LIST:-${0}}"
 FILTERS="${FILTERS:-
@@ -45,11 +51,13 @@ FILTERS="${FILTERS:-
 
 # Functions
 function extractPlaylist {
- sed -e '1,/^########## M3U URLs below ##########$/d' ${@}
+ sed -e '1,/^########## M3U URLs below ##########$/d'\
+  $( [ "${NETWORK_MODE}" == "onion" ] && echo -n '-e s/darkside.cc/foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion/g')\
+  ${@}
 }
 
 function getPlaylist {
- curl -sK -
+ "${EXEC_WRAPPER}" curl -sK -
 }
 
 function filterPlaylist {
@@ -68,7 +76,7 @@ PLAYLIST="$(
 #exec cat -- <<< "${PLAYLIST}"
 
 # PLAY
-exec ${PLAYER} <<< "${PLAYLIST}"
+exec "${EXEC_WRAPPER}" ${PLAYER} <<< "${PLAYLIST}"
 exit 1
 
 ########## M3U URLs below ##########

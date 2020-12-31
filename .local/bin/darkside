@@ -57,7 +57,7 @@ function extractPlaylist {
 }
 
 function getPlaylist {
- "${EXEC_WRAPPER}" curl -sK -
+ ${EXEC_WRAPPER} curl -sK -
 }
 
 function filterPlaylist {
@@ -76,7 +76,7 @@ PLAYLIST="$(
 #exec cat -- <<< "${PLAYLIST}"
 
 # PLAY
-exec "${EXEC_WRAPPER}" ${PLAYER} <<< "${PLAYLIST}"
+exec ${EXEC_WRAPPER} ${PLAYER} <<< "${PLAYLIST}"
 exit 1
 
 ########## M3U URLs below ##########

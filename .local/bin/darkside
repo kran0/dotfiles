@@ -47,7 +47,7 @@ PLAYER_MODE="${PLAYER_MODE:-stream}" # playlist | stream | debug
 # Environment from state
 
 # We use socks proxy because there is no torify in termux avalible
-ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf)"\
+ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf 2>/dev/null)"\
  || ONION_PROXY='127.0.0.1:9150'
 
 case $(timeout 1 curl --silent --output /dev/null http://darkside.cc -w '%{http_code}\n') in
@@ -75,10 +75,10 @@ function getStream {
 
 # PLAY
 (
- [ -s "${PLAYLIST_CACHE}" ] && exec cat "${PLAYLIST_CACHE}"
- getPlaylist "${LIST}"\
-  | filterPlaylist "${FILTERS} $@"\
-  | tee "${PLAYLIST_CACHE}"
+ cat "${PLAYLIST_CACHE}" 2>/dev/null\
+ || getPlaylist "${LIST}"\
+     | filterPlaylist "${FILTERS} $@"\
+     | tee "${PLAYLIST_CACHE}"
 )\
  | case "${PLAYER_MODE}" in
     "stream"   ) getStream | mpv -             ;;

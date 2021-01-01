@@ -4,7 +4,7 @@
 [ "${1}" == '--help' ] && exec cat << HELP
 
 ${0} is my portable network music player.
-/Based on: bash, cat, curl, mpv, sed, shuf and torify/
+/Based on: bash, cat, curl, mpv, sed and shuf/
 
 Workflow:
 - If exist PLAYLIST_CACHE, use PLAYLIST_CACHE;
@@ -43,9 +43,16 @@ FILTERS="${FILTERS:-
 }"
 PLAYLIST_CACHE="${PLAYLIST_CACHE:-/tmp/darkside.cache}"
 PLAYER_MODE="${PLAYER_MODE:-stream}" # playlist | stream | debug
+
+# Environment from state
+
+# We use socks proxy because there is no torify in termux avalible
+ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf)"\
+ || ONION_PROXY='127.0.0.1:9150'
+
 case $(timeout 1 curl --silent --output /dev/null http://darkside.cc -w '%{http_code}\n') in
  200 ) CURL='curl'  ;;
- *   ) CURL='torify curl
+ *   ) CURL='curl --socks5 ${ONION_PROXY} --socks5-hostname ${ONION_PROXY}
   --connect-to darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion:80
   --header "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"';
        PLAYER_MODE='stream' ;;
@@ -78,7 +85,7 @@ function getStream {
     "playlist" ) exec mpv --shuffle --playlist=- -- ;;
     *          ) exec cat                           ;;
    esac
-exit 1
+exec ${0} ${@}
 ########## M3U URLs below ##########
 
 #18 Summers /Synthpop/

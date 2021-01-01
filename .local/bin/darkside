@@ -4,35 +4,30 @@
 [ "${1}" == '--help' ] && exec cat << HELP
 
 ${0} is my portable network music player.
-/Based on: bash, curl, sed, cat and mpv/
+/Based on: bash, cat, curl, mpv, sed, shuf and torify/
 
 Workflow:
-- Extract M3U links from LIST (default LIST is defined at the botoom of the script);
+- If exist PLAYLIST_CACHE, use PLAYLIST_CACHE;
+- Else extract M3U links from LIST (default LIST is defined at the botoom of the script);
 - Filter links (default FLITERS are predefined);
-- Execute the PLAYER and pass filtered content to PLAYERs stdin.
+- Exec player according to the PLAYER_MODE:
+   PLAYER_MODE=stream - caching the music stream in RAM;
+   PLAYER_MODE=playlist - caching the playlist in RAM.
 
 Environment (optional):
 : LIST    - filename with cURL --config syntax contens (/--config/ in man curl);
 : FILTERS - list with sed expression[s] (man sed);
-: PLAYER  - program path with arguments ready to process LIST from stdin.
+: PLAYER_MODE - [ stream | playlist ]
 
 Examples:
- ${0}                                  # Use defaults: LIST, FILTERS, PLAYER;
+ ${0}                                  # Use defaults: LIST, FILTERS;
  ${0} '/WarlocK/!d'                    # The same, but add custom filter;
  LIST=~/Music/playlist.curl ${0}       # Redefine LIST location;
  FILTERS='' ${0}                       # Disable predefined FILTERS;
- PLAYER='mplayer --playlist - --' ${0} # Redefine PLAYER;
 
 HELP
 
-# Environment
-if [ "${0##*.}" == "onion" ]
-then
- # if ${0} is darkside.onion
- NETWORK_MODE='onion'
- EXEC_WRAPPER='torify'
-fi
-PLAYER="${PLAYER:-mpv --shuffle --playlist=- --}"
+# Environment from args
 LIST="${LIST:-${0}}"
 FILTERS="${FILTERS:-
 /^#\|^[[:space:]]*$/d
@@ -46,39 +41,44 @@ FILTERS="${FILTERS:-
 /\/M\/Metallica\/Bilbao%20BBK%20Live%20Festival/d
 /\/Q\/Queen\/At%20The%20BBC/d
 }"
-
-# debug: ./darkside | sed -e 's/^.*_music\//\//' | sort | grep --text -i live
+PLAYLIST_CACHE="${PLAYLIST_CACHE:-/tmp/darkside.cache}"
+PLAYER_MODE="${PLAYER_MODE:-stream}" # playlist | stream | debug
+case $(timeout 1 curl --silent --output /dev/null http://darkside.cc -w '%{http_code}\n') in
+ 200 ) CURL='curl'  ;;
+ *   ) CURL='torify curl
+  --connect-to darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion:80
+  --header "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"';
+       PLAYER_MODE='stream' ;;
+esac
 
 # Functions
-function extractPlaylist {
- sed -e '1,/^########## M3U URLs below ##########$/d'\
-  $( [ "${NETWORK_MODE}" == "onion" ] && echo -n '-e s/darkside.cc/foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion/g')\
-  ${@}
-}
-
 function getPlaylist {
- ${EXEC_WRAPPER} curl -sK -
+ sed -e '1,/^########## M3U URLs below ##########$/d' ${@}\
+ | shuf\
+ | eval ${CURL} -sK -
 }
 
 function filterPlaylist {
  sed -e "${@}"
 }
 
-# Get and filter Playlist
-
-PLAYLIST="$(
- extractPlaylist "${LIST}"\
- | getPlaylist\
- | filterPlaylist "${FILTERS} $@"
-)"
-
-# DEBUG
-#exec cat -- <<< "${PLAYLIST}"
+function getStream {
+ shuf | sed -e 's/^http/\nurl &/' | eval ${CURL} -sK -
+}
 
 # PLAY
-exec ${EXEC_WRAPPER} ${PLAYER} <<< "${PLAYLIST}"
+(
+ [ -s "${PLAYLIST_CACHE}" ] && exec cat "${PLAYLIST_CACHE}"
+ getPlaylist "${LIST}"\
+  | filterPlaylist "${FILTERS} $@"\
+  | tee "${PLAYLIST_CACHE}"
+)\
+ | case "${PLAYER_MODE}" in
+    "stream"   ) getStream | mpv -             ;;
+    "playlist" ) exec mpv --shuffle --playlist=- -- ;;
+    *          ) exec cat                           ;;
+   esac
 exit 1
-
 ########## M3U URLs below ##########
 
 #18 Summers /Synthpop/
@@ -89,6 +89,12 @@ url http://darkside.cc/m3u/group/4
 
 # Doro /Hard Rock, Heavy Metal, Soft-Rock/
 url http://darkside.cc/m3u/group/275
+
+#Evanescence /Gothic Metal/
+url http://darkside.cc/m3u/group/411
+
+#Helloween /Power Metal, Speed Metal/
+#url http://darkside.cc/m3u/group/540
 
 #Metallica /Heavy Metal, Nu-Metal, Speed Metal, Thrash Metal/
 #url http://darkside.cc/m3u/group/722
@@ -113,6 +119,3 @@ url http://darkside.cc/m3u/group/2341
 
 #Кино /Rock/
 url http://darkside.cc/m3u/group/265343
-
-#Helloween /Power Metal, Speed Metal/
-url http://darkside.cc/m3u/group/540

@@ -6,10 +6,13 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # User specific environment and startup programs
+if [ -z "${PREFIX}" ]
+then
+ # Termux detected
+ export TERMUX_ENVIRONMENT='true'
+ . "${HOME}/.local/etc/ssh-agent-call"
+fi
 
-PATH=$PATH:$HOME/.local/bin
-
-export PATH
-
+export PATH=${PATH}:${HOME}/.local/bin
 #export VISUAL="vim -u $HOME/.vimrc"
 #export EDITOR="$VISUAL"

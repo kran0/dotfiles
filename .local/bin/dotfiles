@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 GIT_REPO="${REPO:-https://github.com/kran0/dotfiles.git}"
 CHECKOUT="${CHECKOUT:-master}"

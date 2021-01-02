@@ -7,8 +7,7 @@ ${0} is my portable network music player.
 /Based on: bash, cat, curl, mpv, sed and shuf/
 
 Workflow:
-- If exist PLAYLIST_CACHE, use PLAYLIST_CACHE;
-- Else extract M3U links from LIST (default LIST is defined at the botoom of the script);
+- Extract M3U links from LIST (default LIST is defined at the botoom of the script);
 - Filter links (default FLITERS are predefined);
 - Exec player according to the PLAYER_MODE:
    PLAYER_MODE=stream - caching the music stream in RAM;
@@ -61,11 +60,7 @@ esac
 
 # Functions
 function getPlaylist {
- (
- echo 'url http://darkside.cc/m3u/group/$(shuf -i 1-285777 -n 1)'
- sed -e '1,/^########## M3U URLs below ##########$/d' ${@}
- )\
-  | shuf\
+ sed -e '1,/^########## M3U URLs below ##########$/d' ${@}\
   | eval ${CURL} -sK -
 }
 
@@ -74,15 +69,15 @@ function filterPlaylist {
 }
 
 function getStream {
- shuf | sed -e 's/^http/\nurl &/' | eval ${CURL} -sK -
+ shuf | sed -ne 's/^http/\nurl &/p' | eval ${CURL} -sK -
 }
 
 # PLAY
 (
  cat "${PLAYLIST_CACHE}" 2>/dev/null\
  || getPlaylist "${LIST}"\
-     | filterPlaylist "${FILTERS} $@"\
-     | tee "${PLAYLIST_CACHE}"
+    | filterPlaylist "${FILTERS} $@"\
+    | tee "${PLAYLIST_CACHE}"
 )\
  | case "${PLAYER_MODE}" in
     "stream"   ) getStream | mpv -             ;;
@@ -117,4 +112,4 @@ url http://darkside.cc/m3u/group/2341
 url http://darkside.cc/m3u/group/265343
 
 # Dolores O'Riordan /Rock/
-url http://darkside.cc/m3u/group//277857
+url http://darkside.cc/m3u/group/277857

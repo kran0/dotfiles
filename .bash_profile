@@ -6,7 +6,7 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # User specific environment and startup programs
-if [ ! -z "${PREFIX}" ]
+if [ -z "${TERMUX_ENVIRONMENT}" ] && [ -s "${HOME}/.termux/termux.properties" ]
 then
  # Termux detected
  export TERMUX_ENVIRONMENT='true'

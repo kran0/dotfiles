@@ -41,7 +41,8 @@ FILTERS="${FILTERS:-
 /\/M\/Metallica\/Bilbao%20BBK%20Live%20Festival/d
 /\/Q\/Queen\/At%20The%20BBC/d
 }"
-PLAYLIST_CACHE="${PLAYLIST_CACHE:-/tmp/darkside.cache}"
+export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --dry-run --suffix=.darkside)}"
+trap 'rm -f ${PLAYLIST_CACHE}' EXIT
 PLAYER_MODE="${PLAYER_MODE:-stream}" # playlist | stream | debug
 
 # Environment from state
@@ -114,3 +115,6 @@ url http://darkside.cc/m3u/group/2341
 
 #Кино /Rock/
 url http://darkside.cc/m3u/group/265343
+
+# Dolores O'Riordan /Rock/
+url http://darkside.cc/m3u/group//277857

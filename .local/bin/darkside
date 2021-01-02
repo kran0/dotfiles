@@ -4,19 +4,17 @@
 [ "${1}" == '--help' ] && exec cat << HELP
 
 ${0} is my portable network music player.
-/Based on: bash, cat, curl, mpv, sed and shuf/
+/Based on: bash, cat, curl, sed and shuf/
 
 Workflow:
 - Extract M3U links from LIST (default LIST is defined at the botoom of the script);
 - Filter links (default FLITERS are predefined);
-- Exec player according to the PLAYER_MODE:
-   PLAYER_MODE=stream - caching the music stream in RAM;
-   PLAYER_MODE=playlist - caching the playlist in RAM.
+- Exec PLAYER.
 
 Environment (optional):
 : LIST    - filename with cURL --config syntax contens (/--config/ in man curl);
 : FILTERS - list with sed expression[s] (man sed);
-: PLAYER_MODE - [ stream | playlist ]
+: PLAYER  - use cat for debug.
 
 Examples:
  ${0}                                  # Use defaults: LIST, FILTERS;
@@ -42,7 +40,7 @@ FILTERS="${FILTERS:-
 }"
 export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --dry-run --suffix=.darkside)}"
 trap 'rm -f ${PLAYLIST_CACHE}' EXIT
-PLAYER_MODE="${PLAYER_MODE:-stream}" # playlist | stream | debug
+PLAYER="${PLAYER:-exec player --shuffle --playlist=- --}"
 
 # Environment from state
 
@@ -55,7 +53,7 @@ case $(timeout 1 curl --silent --output /dev/null http://darkside.cc -w '%{http_
  *   ) CURL='curl --socks5 ${ONION_PROXY} --socks5-hostname ${ONION_PROXY}
   --connect-to darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion:80
   --header "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"';
-       PLAYER_MODE='stream' ;;
+       PLAYER="getStream | player -" ;;
 esac
 
 # Functions
@@ -79,11 +77,8 @@ function getStream {
     | filterPlaylist "${FILTERS} $@"\
     | tee "${PLAYLIST_CACHE}"
 )\
- | case "${PLAYER_MODE}" in
-    "stream"   ) getStream | mpv -             ;;
-    "playlist" ) exec mpv --shuffle --playlist=- -- ;;
-    *          ) exec cat                           ;;
-   esac
+ | eval "${PLAYER}"
+
 exec ${0} ${@}
 ########## M3U URLs below ##########
 

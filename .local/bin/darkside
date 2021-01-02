@@ -60,9 +60,12 @@ esac
 
 # Functions
 function getPlaylist {
- sed -e '1,/^########## M3U URLs below ##########$/d' ${@}\
- | shuf\
- | eval ${CURL} -sK -
+ (
+ echo 'url http://darkside.cc/m3u/group/$(shuf -i 1-285777 -n 1)'
+ sed -e '1,/^########## M3U URLs below ##########$/d' ${@}
+ )\
+  | shuf\
+  | eval ${CURL} -sK -
 }
 
 function filterPlaylist {
@@ -91,26 +94,14 @@ exec ${0} ${@}
 #18 Summers /Synthpop/
 url http://darkside.cc/m3u/group/4
 
-#Apocalyptica /Hard Rock, Instrumental, Melodic Hard Rock/
-#url http://darkside.cc/m3u/group/100
-
 # Doro /Hard Rock, Heavy Metal, Soft-Rock/
 url http://darkside.cc/m3u/group/275
-
-#Evanescence /Gothic Metal/
-url http://darkside.cc/m3u/group/411
 
 #Helloween /Power Metal, Speed Metal/
 #url http://darkside.cc/m3u/group/540
 
-#Metallica /Heavy Metal, Nu-Metal, Speed Metal, Thrash Metal/
-#url http://darkside.cc/m3u/group/722
-
 #Nightwish /Opera Metal, Power Metal, Progressive/
 url http://darkside.cc/m3u/group/786
-
-#Nirvana /Grunge/
-#url http://darkside.cc/m3u/group/805
 
 #WarlocK /Heavy Metal/
 url http://darkside.cc/m3u/group/1163
@@ -120,9 +111,6 @@ url http://darkside.cc/m3u/group/2234
 
 #Пелагея /Folk/
 url http://darkside.cc/m3u/group/2341
-
-#Queen /Hard Rock, Rock/
-#url http://darkside.cc/m3u/group/9007
 
 #Кино /Rock/
 url http://darkside.cc/m3u/group/265343

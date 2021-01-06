@@ -4,7 +4,7 @@
 [ "${1}" == '--help' ] && exec cat << HELP
 
 ${0} is my portable network music player.
-/Based on: bash, curl, sed and shuf/
+/Based on: bash, cat, curl, sed and shuf/
 
 Workflow:
 - Extract M3U links from LIST (default LIST is defined at the botoom of the script);
@@ -65,13 +65,19 @@ getPlaylist "${LIST:-${0}}"\
  | filterPlaylist "${FILTERS} $@"\
  | shuf\
  | bufferLinks\
- | while read buffered
+ | while count=$(($(find "${PLAYLIST_CACHE}"/*.cache | wc -l)-1))
    do
-    player "${buffered}"
-    rm -v "${buffered}"
+    [ "${count}" -le "0"  ] && sleep 16 && continue # warming up cache
+    [ "${count}" -gt "64" ] && cont=64              # 64 is big enough
+
+     head --lines=${count}\
+     | tee --append "${PLAYLIST_CACHE}"/done.rm\
+     | player --playlist=-
+
+     rm -v $(cat "${PLAYLIST_CACHE}"/done.rm) "${PLAYLIST_CACHE}"/done.rm
    done
 
-exit 1
+exit 0
 ########## M3U URLs below ##########
 connect-to "darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion:80"
 header     "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"

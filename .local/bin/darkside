@@ -57,7 +57,17 @@ function bufferLinks {
  while [ "$(($(stat -f --format="%a*%S" "${PLAYLIST_CACHE}")/1024/1024))" '>' "100" ] && read link
  do
   out=$(mktemp --tmpdir="${PLAYLIST_CACHE}" --dry-run --suffix=.cache)
-  ${CURL} --silent --output "${out}" "${link}" && echo "${out}"
+  echo "${out}"
+  ${CURL} --silent --output "${out}" "${link}"
+ done
+}
+
+function whaitFillBuffer {
+ # returns number of files in cache
+ while result=$(find "${PLAYLIST_CACHE}"/*.cache | wc -l)
+ do
+  [ "${result}" -gt "0" ] && echo ${result} && return
+  sleep ${1:-1}
  done
 }
 
@@ -65,16 +75,16 @@ getPlaylist "${LIST:-${0}}"\
  | filterPlaylist "${FILTERS} $@"\
  | shuf\
  | bufferLinks\
- | while count=$(($(find "${PLAYLIST_CACHE}"/*.cache | wc -l)-1))
+ | while count=$(whaitFillBuffer 16)
    do
-    [ "${count}" -le "0"  ] && sleep 16 && continue # warming up cache
-    [ "${count}" -gt "64" ] && cont=64              # 64 is big enough
+    (
+     cat "${PLAYLIST_CACHE}"/done.rm >/dev/null\
+     || head --lines=$((${count}))\
+      | tee --append "${PLAYLIST_CACHE}"/done.rm\
+    ) | player --playlist=-
 
-     head --lines=${count}\
-     | tee --append "${PLAYLIST_CACHE}"/done.rm\
-     | player --playlist=-
-
-     rm -v $(cat "${PLAYLIST_CACHE}"/done.rm) "${PLAYLIST_CACHE}"/done.rm
+    [ "$(whaitFillBuffer)" -gt "${count}" ]\
+     && rm -v $(cat "${PLAYLIST_CACHE}"/done.rm) "${PLAYLIST_CACHE}"/done.rm
    done
 
 exit 0

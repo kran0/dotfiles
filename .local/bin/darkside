@@ -1,10 +1,10 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # Help
 [ "${1}" == '--help' ] && exec cat << HELP
 
 ${0} is my portable network music player.
-/Based on: bash, cat, curl, sed and shuf/
+/Based on: bash, curl, sed and shuf/
 
 Workflow:
 - Extract M3U links from LIST (default LIST is defined at the botoom of the script);
@@ -13,8 +13,7 @@ Workflow:
 
 Environment (optional):
 : LIST    - filename with cURL --config syntax contens (/--config/ in man curl);
-: FILTERS - list with sed expression[s] (man sed);
-: PLAYER  - use cat for debug.
+: FILTERS - list with sed expression[s] (man sed).
 
 Examples:
  ${0}                                  # Use defaults: LIST, FILTERS;
@@ -24,63 +23,58 @@ Examples:
 
 HELP
 
-# Environment from args
-LIST="${LIST:-${0}}"
-FILTERS="${FILTERS:-
-/^#\|^[[:space:]]*$/d
-/\/play_i\//d
-/([Ll]ive/d
-/\[[Ll]ive/d
-/\/Live%20[Ii]n/d
-/\/Live%20[Aa]t/d
+DEFAULT_FILTERS="/^#\|^[[:space:]]*$/d
+/\/play_i\//d"
+FILTERS="${FILTERS:-${DEFAULT_FILTERS}
 /\/T\/Tarja\/Act%20I%20.Live%20...%20CD.%20.2012./d
 /\/M\/Metallica\/Cliff.s%20Last%20Gig/d
 /\/M\/Metallica\/Bilbao%20BBK%20Live%20Festival/d
 /\/Q\/Queen\/At%20The%20BBC/d
 }"
-export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --dry-run --suffix=.darkside)}"
-trap 'rm -f ${PLAYLIST_CACHE}' EXIT
-PLAYER="${PLAYER:-exec player --shuffle --playlist=- --}"
 
-# Environment from state
+export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --directory --suffix=.darkside)}"
+export TEMP_DIRS+="${PLAYLIST_CACHE} "
+trap 'rm -rvf ${TEMP_DIRS}' EXIT
 
 # We use socks proxy because there is no torify in termux avalible
 ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf 2>/dev/null)"\
  || ONION_PROXY='127.0.0.1:9150'
+export ONION_PROXY
 
-case $(timeout 1 curl --silent --output /dev/null http://darkside.cc -w '%{http_code}\n') in
- 200 ) CURL='curl'  ;;
- *   ) CURL='curl --socks5 ${ONION_PROXY} --socks5-hostname ${ONION_PROXY}
-  --connect-to darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion:80
-  --header "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"';
-       PLAYER="getStream | player -" ;;
-esac
+CURL="curl --socks5 ${ONION_PROXY} --socks5-hostname ${ONION_PROXY}"
 
-# Functions
 function getPlaylist {
  sed -e '1,/^########## M3U URLs below ##########$/d' ${@}\
-  | eval ${CURL} -sK -
+  | ${CURL} --silent --config -
 }
 
 function filterPlaylist {
  sed -e "${@}"
 }
 
-function getStream {
- shuf | sed -ne 's/^http/\nurl &/p' | eval ${CURL} -sK -
+function bufferLinks {
+ find "${PLAYLIST_CACHE}"/*.cache 2>/dev/null # old cache if exist
+ while [ "$(($(stat -f --format="%a*%S" "${PLAYLIST_CACHE}")/1024/1024))" '>' "100" ] && read link
+ do
+  out=$(mktemp --tmpdir="${PLAYLIST_CACHE}" --dry-run --suffix=.cache)
+  ${CURL} --silent --output "${out}" "${link}" && echo "${out}"
+ done
 }
 
-# PLAY
-(
- cat "${PLAYLIST_CACHE}" 2>/dev/null\
- || getPlaylist "${LIST}"\
-    | filterPlaylist "${FILTERS} $@"\
-    | tee "${PLAYLIST_CACHE}"
-)\
- | eval "${PLAYER}"
+getPlaylist "${LIST:-${0}}"\
+ | filterPlaylist "${FILTERS} $@"\
+ | shuf\
+ | bufferLinks\
+ | while read buffered
+   do
+    player "${buffered}"
+    rm -v "${buffered}"
+   done
 
-exec ${0} ${@}
+exit 1
 ########## M3U URLs below ##########
+connect-to "darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion:80"
+header     "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"
 
 #18 Summers /Synthpop/
 url http://darkside.cc/m3u/group/4
@@ -104,7 +98,7 @@ url http://darkside.cc/m3u/group/2234
 url http://darkside.cc/m3u/group/2341
 
 #Кино /Rock/
-url http://darkside.cc/m3u/group/265343
+#url http://darkside.cc/m3u/group/265343
 
 # Dolores O'Riordan /Rock/
 url http://darkside.cc/m3u/group/277857

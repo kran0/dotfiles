@@ -35,6 +35,8 @@ FILTERS="${FILTERS:-${DEFAULT_FILTERS}
 export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --directory --suffix=.darkside)}"
 export TEMP_DIRS+="${PLAYLIST_CACHE} "
 trap 'rm -rvf ${TEMP_DIRS}' EXIT
+CURRENT_PLAYLIST="${PLAYLIST_CACHE}/current.pls"
+MINIMUM_CACHE="${MINIMUM_CACHE:-1}"
 
 # We use socks proxy because there is no torify in termux avalible
 ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf 2>/dev/null)"\
@@ -62,29 +64,32 @@ function bufferLinks {
  done
 }
 
-function whaitFillBuffer {
- # returns number of files in cache
- while result=$(find "${PLAYLIST_CACHE}"/*.cache | wc -l)
- do
-  [ "${result}" -gt "0" ] && echo ${result} && return
-  sleep ${1:-1}
- done
-}
-
 getPlaylist "${LIST:-${0}}"\
  | filterPlaylist "${FILTERS} $@"\
  | shuf\
  | bufferLinks\
- | while count=$(whaitFillBuffer 16)
+ | while count=$(find "${PLAYLIST_CACHE}"/*.cache | wc -l)
    do
-    (
-     cat "${PLAYLIST_CACHE}"/done.rm >/dev/null\
-     || head --lines=$((${count}))\
-      | tee --append "${PLAYLIST_CACHE}"/done.rm\
-    ) | player --playlist=-
 
-    [ "$(whaitFillBuffer)" -gt "${count}" ]\
-     && rm -v $(cat "${PLAYLIST_CACHE}"/done.rm) "${PLAYLIST_CACHE}"/done.rm
+   # Wait fill buffer
+   [ "${count}" -lt "${MINIMUM_CACHE}" ]\
+    && sleep 16\
+    && continue
+
+   # If count is growing, then clean previous
+   [ "${count}" -gt "${count_previous:-${MINIMUM_CACHE}}" ]\
+    && [ -s "${CURRENT_PLAYLIST}" ]\
+    && count_previous=${count}\
+    && rm $(cat "${CURRENT_PLAYLIST}") "${CURRENT_PLAYLIST}"\
+    && continue
+
+   (
+    [ -s "${CURRENT_PLAYLIST}" ]\
+     && cat "${CURRENT_PLAYLIST}"\
+     || head --lines="${count}"\
+      | tee --append "${CURRENT_PLAYLIST}"\
+   ) | player --playlist=-
+
    done
 
 exit 0

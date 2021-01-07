@@ -36,7 +36,7 @@ export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --directory --suffix=.darkside
 export TEMP_DIRS+="${PLAYLIST_CACHE} "
 trap 'rm -rvf ${TEMP_DIRS}' EXIT
 CURRENT_PLAYLIST="${PLAYLIST_CACHE}/current.pls"
-MINIMUM_CACHE="${MINIMUM_CACHE:-1}"
+MINIMUM_CACHE="${MINIMUM_CACHE:-2}" # 2 is recommended minimum
 LIST_CACHE="${LIST_CACHE:-${HOME}/.cache/darkside-playlist.cache}"
 
 # We use socks proxy because there is no torify in termux avalible
@@ -79,7 +79,7 @@ getPlaylist "${LIST:-${0}}"\
 
    # Wait fill buffer
    [ "${count}" -lt "${MINIMUM_CACHE}" ]\
-    && sleep 1\
+    && sleep 20\
     && continue
 
    # If count is growing, then clean previous

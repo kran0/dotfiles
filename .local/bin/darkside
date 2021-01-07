@@ -37,6 +37,7 @@ export TEMP_DIRS+="${PLAYLIST_CACHE} "
 trap 'rm -rvf ${TEMP_DIRS}' EXIT
 CURRENT_PLAYLIST="${PLAYLIST_CACHE}/current.pls"
 MINIMUM_CACHE="${MINIMUM_CACHE:-1}"
+LIST_CACHE="${LIST_CACHE:-${HOME}/.cache/darkside-playlist.cache}"
 
 # We use socks proxy because there is no torify in termux avalible
 ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf 2>/dev/null)"\
@@ -51,7 +52,13 @@ function getPlaylist {
 }
 
 function filterPlaylist {
- sed -e "${@}"
+ sed -e "${@}" "${LIST_CACHE}"\
+  | shuf\
+  | head --lines="${MINIMUM_CACHE}"
+
+ sed -e "${@}"\
+ | tee "${LIST_CACHE}"\
+ | shuf
 }
 
 function bufferLinks {
@@ -66,14 +73,13 @@ function bufferLinks {
 
 getPlaylist "${LIST:-${0}}"\
  | filterPlaylist "${FILTERS} $@"\
- | shuf\
  | bufferLinks\
- | while count=$(find "${PLAYLIST_CACHE}"/*.cache | wc -l)
+ | while count=$(find "${PLAYLIST_CACHE}"/*.cache 2>/dev/null | wc -l)
    do
 
    # Wait fill buffer
    [ "${count}" -lt "${MINIMUM_CACHE}" ]\
-    && sleep 16\
+    && sleep 1\
     && continue
 
    # If count is growing, then clean previous

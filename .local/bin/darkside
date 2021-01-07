@@ -32,12 +32,11 @@ FILTERS="${FILTERS:-${DEFAULT_FILTERS}
 /\/Q\/Queen\/At%20The%20BBC/d
 }"
 
-export PLAYLIST_CACHE="${PLAYLIST_CACHE:-$(mktemp --directory --suffix=.darkside)}"
-export TEMP_DIRS+="${PLAYLIST_CACHE} "
-trap 'rm -rvf ${TEMP_DIRS}' EXIT
-CURRENT_PLAYLIST="${PLAYLIST_CACHE}/current.pls"
+export TEMP_DIR="${TEMP_DIR:-$(mktemp --directory --suffix=.darkside)}"
+trap 'rm -rvf ${TEMP_DIR}' EXIT
+TEMP_PLAYLIST="${TEMP_DIR}/current.pls"
 MINIMUM_CACHE="${MINIMUM_CACHE:-2}" # 2 is recommended minimum
-LIST_CACHE="${LIST_CACHE:-${HOME}/.cache/darkside-playlist.cache}"
+CACHE_PLAYLIST="${CACHE_PLAYLIST:-${HOME}/.cache/darkside-playlist.cache}"
 
 # We use socks proxy because there is no torify in termux avalible
 ONION_PROXY="127.0.0.1:$(sed -ne 's/^TorPort //p' /etc/tor/torsocks.conf 2>/dev/null)"\
@@ -52,20 +51,20 @@ function getPlaylist {
 }
 
 function filterPlaylist {
- sed -e "${@}" "${LIST_CACHE}"\
+ sed -e "${@}" "${CACHE_PLAYLIST}"\
   | shuf\
   | head --lines="${MINIMUM_CACHE}"
 
  sed -e "${@}"\
- | tee "${LIST_CACHE}"\
+ | tee "${CACHE_PLAYLIST}"\
  | shuf
 }
 
 function bufferLinks {
- find "${PLAYLIST_CACHE}"/*.cache 2>/dev/null # old cache if exist
- while [ "$(($(stat -f --format="%a*%S" "${PLAYLIST_CACHE}")/1024/1024))" '>' "100" ] && read link
+ find "${TEMP_DIR}"/*.cache 2>/dev/null # old cache if exist
+ while [ "$(($(stat -f --format="%a*%S" "${TEMP_DIR}")/1024/1024))" '>' "100" ] && read link
  do
-  out=$(mktemp --tmpdir="${PLAYLIST_CACHE}" --dry-run --suffix=.cache)
+  out=$(mktemp --tmpdir="${TEMP_DIR}" --dry-run --suffix=.cache)
   echo "${out}"
   ${CURL} --silent --output "${out}" "${link}"
  done
@@ -74,7 +73,7 @@ function bufferLinks {
 getPlaylist "${LIST:-${0}}"\
  | filterPlaylist "${FILTERS} $@"\
  | bufferLinks\
- | while count=$(find "${PLAYLIST_CACHE}"/*.cache 2>/dev/null | wc -l)
+ | while count=$(find "${TEMP_DIR}"/*.cache 2>/dev/null | wc -l)
    do
 
    # Wait fill buffer
@@ -84,16 +83,16 @@ getPlaylist "${LIST:-${0}}"\
 
    # If count is growing, then clean previous
    [ "${count}" -gt "${count_previous:-${MINIMUM_CACHE}}" ]\
-    && [ -s "${CURRENT_PLAYLIST}" ]\
+    && [ -s "${TEMP_PLAYLIST}" ]\
     && count_previous=${count}\
-    && rm $(cat "${CURRENT_PLAYLIST}") "${CURRENT_PLAYLIST}"\
+    && rm $(cat "${TEMP_PLAYLIST}") "${TEMP_PLAYLIST}"\
     && continue
 
    (
-    [ -s "${CURRENT_PLAYLIST}" ]\
-     && cat "${CURRENT_PLAYLIST}"\
+    [ -s "${TEMP_PLAYLIST}" ]\
+     && cat "${TEMP_PLAYLIST}"\
      || head --lines="${count}"\
-      | tee --append "${CURRENT_PLAYLIST}"\
+      | tee --append "${TEMP_PLAYLIST}"\
    ) | player --playlist=-
 
    done

@@ -1,8 +1,8 @@
 # XScreenSaver Preferences File
-# Written by xscreensaver-demo 5.29 for spo on Sun Aug 24 12:31:06 2014.
-# http://www.jwz.org/xscreensaver/
+# Written by xscreensaver-settings 6.01-3.fc34 for spo on Mon Jul 26 09:43:14 2021.
+# https://www.jwz.org/xscreensaver/
 
-timeout:	0:20:00
+timeout:	0:29:00
 cycle:		0:10:00
 lock:		True
 lockTimeout:	2:00:00
@@ -10,18 +10,13 @@ passwdTimeout:	0:00:15
 visualID:	default
 installColormap:    True
 verbose:	False
-timestamp:	True
 splash:		False
 splashDuration:	0:00:05
 demoCommand:	xscreensaver-demo
-prefsCommand:	xscreensaver-demo -prefs
 nice:		10
-memoryLimit:	0
 fade:		True
 unfade:		False
 fadeSeconds:	0:00:03
-fadeTicks:	20
-captureStderr:	False
 ignoreUninstalledPrograms:True
 font:		*-medium-r-*-140-*-m-*
 dpmsEnabled:	True
@@ -42,6 +37,7 @@ textLiteral:	XScreenSaver
 textFile:	/etc/fedora-release
 textProgram:	fortune -s
 textURL:	http://planet.fedoraproject.org/rss20.xml
+dialogTheme:	default
 
 programs:								      \
 				maze -root				    \n\
@@ -251,14 +247,43 @@ programs:								      \
   GL: 				unknownpleasures -root			    \n\
   GL: 				projectiveplane -root			    \n\
 				tessellimage -root			    \n\
+				scooter -root				    \n\
+				binaryring -root			    \n\
+  GL: 				cityflow -root				    \n\
+  GL: 				geodesicgears -root			    \n\
+  GL: 				romanboy -root				    \n\
+  GL: 				winduprobot -root			    \n\
+  GL: 				splitflap -root				    \n\
+  GL: 				cubestack -root				    \n\
+  GL: 				cubetwist -root				    \n\
+  GL: 				discoball -root				    \n\
+  GL: 				dymaxionmap -root			    \n\
+  GL: 				energystream -root			    \n\
+  GL: 				hexstrut -root				    \n\
+  GL: 				hydrostat -root				    \n\
+  GL: 				raverhoop -root				    \n\
+  GL: 				splodesic -root				    \n\
+  GL: 				unicrud -root				    \n\
+  GL: 				esper -root				    \n\
+  GL: 				vigilance -root				    \n\
+  GL: 				crumbler -root				    \n\
+				filmleader -root			    \n\
+				glitchpeg -root				    \n\
+  GL: 				handsy -root				    \n\
+  GL: 				maze3d -root				    \n\
+- GL: 				peepers -root				    \n\
+  GL: 				razzledazzle -root			    \n\
+				vfeedback -root				    \n\
+  GL: 				deepstars -root				    \n\
+  GL: 				gravitywell -root			    \n\
+  GL: 				beats -root				    \n\
+  GL: 				covid19 -root				    \n\
+  GL: 				etruscanvenus -root			    \n\
+  GL: 				gibson -root				    \n\
+- GL: 				headroom -root				    \n\
+  GL: 				sphereeversion -root			    \n\
 
 
-pointerPollTime:    0:00:05
 pointerHysteresis:  10
-windowCreationTimeout:0:00:30
-initialDelay:	0:00:00
-GetViewPortIsFullOfLies:False
-procInterrupts:	True
-xinputExtensionDev: False
-overlayStderr:	True
+authWarningSlack:   20
 

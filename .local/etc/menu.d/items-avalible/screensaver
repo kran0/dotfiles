@@ -10,3 +10,5 @@ xset dpms q\
  | tail --lines=1\
  | grep -q '^  Monitor is On$'\
  && exec ${0} "$(($TIMEOUT+30))"
+
+bluetoothctl <<< "power off"

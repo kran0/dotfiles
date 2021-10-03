@@ -103,28 +103,26 @@ connect-to "darkside.cc:80:foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44
 header     "Host: foye3hwyvtthhoifpt6mnkowosras46uirxrx5brsjqawonhs4p44rad.onion"
 
 #18 Summers /Synthpop/
-url http://darkside.cc/m3u/group/4
+url http://darkside.cc/playlist/artist/12515
 
 # Doro /Hard Rock, Heavy Metal, Soft-Rock/
-url http://darkside.cc/m3u/group/275
-
-#Helloween /Power Metal, Speed Metal/
-#url http://darkside.cc/m3u/group/540
+url http://darkside.cc/playlist/artist/588
+url http://darkside.cc/playlist/artist/18796
 
 #Nightwish /Opera Metal, Power Metal, Progressive/
-url http://darkside.cc/m3u/group/786
+url http://darkside.cc/music/artist/165
 
 #WarlocK /Heavy Metal/
-url http://darkside.cc/m3u/group/1163
+url http://darkside.cc/playlist/artist/3249
 
 #Tarja /Neo-Classical/
-url http://darkside.cc/m3u/group/2234
+url http://darkside.cc/playlist/artist/31033
 
 #Пелагея /Folk/
-url http://darkside.cc/m3u/group/2341
+url http://darkside.cc/playlist/artist/34461
 
 #Кино /Rock/
-#url http://darkside.cc/m3u/group/265343
+#url http://darkside.cc/playlist/artist/34288
 
 # Dolores O'Riordan /Rock/
-url http://darkside.cc/m3u/group/277857
+url http://darkside.cc/playlist/artist/18716

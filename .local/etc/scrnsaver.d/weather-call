@@ -1,6 +1,6 @@
 #!/bin/sh
 
-URLS=( https://wttr.in/tomsk https://wttr.in/Moon )
+URLS=( https://wttr.in/tomsk https://wttr.in/Moon https://wttr.in/moscow)
 
 curl --silent --insecure "${URLS[RANDOM%${#URLS[@]}]}" | head --lines=-2
 read -n 1 -s

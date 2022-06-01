@@ -1,5 +1,5 @@
 #!/bin/sh
 
 ROOTPID=$(screen -list | sed -ne '/tabber/{s/^[[:space:]]*\([0-9]*\).*$/\1/p}') #'
-pstree -ach ${ROOTPID}
+pstree -ahnst ${ROOTPID}
 read -n 1 -s

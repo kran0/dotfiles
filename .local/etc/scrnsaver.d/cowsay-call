@@ -13,7 +13,7 @@ TEXTSELECT=(
 MODE=( -b -d -g -p -s -t -w -y )
 MODE="${MODE[RANDOM%${#MODE[@]}]}"
 
-PICTURE=( /usr/share/cowsay/*.cow )
+PICTURE=( /usr/share/cowsay/cows/*.cow )
 PICTURE="${PICTURE[RANDOM%${#PICTURE[@]}]}"
 
 ACTION=( cowsay cowthink )

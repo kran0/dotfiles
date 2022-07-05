@@ -14,7 +14,7 @@ function selectDifferent {
 
 function interactCopy {
 (
- set +e #-x
+ set +e
  tput -S <<COLOURS
 bold
 setaf 1
@@ -27,9 +27,8 @@ COLOURS
 )
 }
 
-pushd "${TEMP_DIR}" 1>/dev/null 2>/dev/null
-
-echo " --- Looking for difference between ${GIT_REPO} (${CHECKOUT}) and ${DEST_DIR} ---"
+pushd "${TEMP_DIR}" >/dev/null
+echo "Compare dotfiles with ${GIT_REPO} (${CHECKOUT})"
 
 (
  git init .
@@ -43,7 +42,7 @@ echo " --- Looking for difference between ${GIT_REPO} (${CHECKOUT}) and ${DEST_D
   interactCopy "${pair// and */}" "${pair//* and /}"
  done
 
-popd 1>/dev/null 2>/dev/null
+popd >/dev/null
 
 # auto delete old copies.
- find "${DEST_DIR}" -mtime +60 -name '*~[0-9]*~' -exec rm {} \; &
+ find "${DEST_DIR}" -mtime +255 -name '*~[0-9]*~' -exec rm {} \; 2>/dev/null

@@ -21,7 +21,6 @@ setaf 1
 COLOURS
  echo "          ${1}":
  tput setaf 0
-  #diff --side-by-side --width=79 --label LABEL "${1}" "${2}"
   diff --label LABEL "${1}" "${2}"
  tput sgr0
   cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
@@ -47,4 +46,4 @@ echo " --- Looking for difference between ${GIT_REPO} (${CHECKOUT}) and ${DEST_D
 popd 1>/dev/null 2>/dev/null
 
 # auto delete old copies.
- find "${DEST_DIR}" -mtime +60 -name '*~[0-9]*~' -exec rm {} \;
+ find "${DEST_DIR}" -mtime +60 -name '*~[0-9]*~' -exec rm {} \; &

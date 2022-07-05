@@ -21,7 +21,7 @@ setaf 1
 COLOURS
  echo "          ${1}":
  tput setaf 0
-  diff --label LABEL "${1}" "${2}"
+  diff --label LABEL "${2}" "${1}"
  tput sgr0
   cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
 )

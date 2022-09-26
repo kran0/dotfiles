@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# $1 must be any of Telegram api methods
+# env should contain fields values
+
+readonly ENV_FIELDS_PREFIX="${ENV_FIELDS_PREFIX:-tg_}"
+readonly TELEGRAM_BOT_SECRETS="${TELEGRAM_BOT_SECRETS:-${HOME}/.local/etc/telegram-bot-token}"
+
+alias __extract_fields='{
+ printf "\055F \"%s\""\
+  $(printenv | sed -ne "/^${ENV_FIELDS_PREFIX}.*=/{s/^${ENV_FIELDS_PREFIX}//p}")
+}'
+
+alias _api-telegram-curl='(
+ . "${TELEGRAM_BOT_SECRETS}";
+ curl --silent ${CURL_ARGS} --output ${OUTPUT_FILE}\
+  $(__extract_fields) -- "${API_URL:-https://api.telegram.org/}bot${API_TOKEN}1/$(cat)";
+)<<<'
+
+case "${1}" in
+ sendDocument|\
+ InputMediaDocument ) _api-telegram-curl "${1}" ;;
+
+ help|--help ) echo "Help text goes here";;
+ * ) echo "Invalid or unsupported method: ${1}";;
+esac

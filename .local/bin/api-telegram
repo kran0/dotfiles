@@ -19,6 +19,7 @@ alias _api-telegram-curl='(
 
 case "${1}" in
  sendDocument|\
+ sendVideo|\
  InputMediaDocument ) _api-telegram-curl "${1}" ;;
 
  help|--help ) echo "Help text goes here";;

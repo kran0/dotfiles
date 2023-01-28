@@ -18,7 +18,7 @@ dnf install\
 dnf install\
     ansible cowsay dia firefox go libreoffice lm_sensors mc mpv nmap-ncat\
     openssh podman podman-compose psmisc pulseaudio-module-bluetooth remmina\
-    remmina-* sublime-text telegram-desktop tigervnc virt-manager x11vnc\
+    remmina-* sublime-text telegram-desktop tigervnc virt-manager xclip x11vnc\
     youtube-dl
 
 # Main depencies

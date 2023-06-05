@@ -23,7 +23,7 @@ dnf install\
 
 # Main depencies
 dnf install\
-    cmatrix dmenu fuse-sshfs git go openssh-clients perl-Curses screen xmodmap\
+    dmenu fuse-sshfs git go openssh-clients perl-Curses screen xmodmap\
     xrdb xterm
 
 go get github.com/{alecthomas/gometalinter,/mdempsky/gocode}

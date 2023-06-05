@@ -1,3 +1,3 @@
 #!/bin/sh
 
-telnet towel.blinkenlights.nl
+exec podman run -it --rm docker.io/library/busybox:latest telnet towel.blinkenlights.nl

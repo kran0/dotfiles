@@ -1,5 +1,22 @@
 #!/bin/sh
 
+IMAGENAME="${IMAGENAME:-cowsay:latest}"
+podman build -f - -t "${IMAGENAME}" << Dockerfile
+FROM docker.io/library/alpine:edge AS prepare
+
+RUN apk add git perl
+RUN git clone https://github.com/tnalpgge/rank-amateur-cowsay.git /cowsay-repo
+RUN mkdir -vp /cowsay\
+ && cd /cowsay-repo\
+ && ./install.sh /cowsay
+
+RUN rm -rvf /cowsay/man
+
+FROM docker.io/kran0/tiny:perl
+COPY --from=prepare /cowsay /cowsay
+CMD /cowsay/bin/cowsay
+Dockerfile
+
 TEXT=$*
 TEXTSELECT=(
  "$(sensors --no-adapter | sed -e 's/(.*//')"
@@ -13,11 +30,8 @@ TEXTSELECT=(
 MODE=( -b -d -g -p -s -t -w -y )
 MODE="${MODE[RANDOM%${#MODE[@]}]}"
 
-PICTURE=( /usr/share/cowsay/cows/*.cow )
-PICTURE="${PICTURE[RANDOM%${#PICTURE[@]}]}"
-
-ACTION=( cowsay cowthink )
+ACTION=( /cowsay/bin/cowsay /cowsay/bin/cowthink )
 ACTION="${ACTION[RANDOM%${#ACTION[@]}]}"
 
-$ACTION -W 77 $MODE -f $PICTURE "$TEXT"
+exec podman run -it --rm -e TERM="${TERM}" "${IMAGENAME}" $ACTION -W 77 $MODE "$TEXT"
 read -n 1 -s

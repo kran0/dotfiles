@@ -1,4 +1,30 @@
 #!/bin/sh
 
-export PERL5LIB=$HOME/.local/lib/perl5
-exec asciiquarium
+#export PERL5LIB=$HOME/.local/lib/perl5
+#exec asciiquarium
+
+IMAGENAME="${IMAGENAME:-asciiquarium:latest}"
+
+podman build -f - -t "${IMAGENAME}" << 'Dockerfile'
+FROM docker.io/library/alpine:edge AS prepare
+
+RUN apk add perl-utils build-base ncurses-dev perl-dev git\
+ && PERL_MM_USE_DEFAULT=1 cpan Term::Animation Curses\
+
+ && mkdir -vp /target\
+ && tar vc /etc/terminfo\
+ /usr/lib/libncursesw.so.6*\
+ /usr/local/share/perl5/site_perl\
+ /usr/local/lib/perl5\
+ | tar x -C /target\
+
+ && git clone https://github.com/cmatsuoka/asciiquarium.git /asciiquarium-source\
+ && cp -v /asciiquarium-source/asciiquarium /target/
+
+FROM docker.io/kran0/tiny:perl
+
+COPY --from=prepare /target /
+CMD /asciiquarium
+Dockerfile
+
+exec podman run -it --rm -e TERM="${TERM}" "${IMAGENAME}" /asciiquarium

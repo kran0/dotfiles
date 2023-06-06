@@ -23,8 +23,7 @@ dnf install\
 
 # Main depencies
 dnf install\
-    dmenu fuse-sshfs git go openssh-clients perl-Curses screen xmodmap\
-    xrdb xterm
+    dmenu fuse-sshfs git go openssh-clients screen xmodmap xrdb xterm
 
 go get github.com/{alecthomas/gometalinter,/mdempsky/gocode}
 go get golang.org/x/tools/cmd/guru

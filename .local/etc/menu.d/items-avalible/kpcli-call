@@ -1,0 +1,51 @@
+#!/bin/sh
+
+IMAGENAME="${IMAGENAME:-kpcli:latest}"
+
+#Build
+podman images "${IMAGENAME}" --format='{{.Repository}}:{{.Tag}}'\
+ | grep -q "${IMAGENAME}"\
+ || podman build -f - -t "${IMAGENAME}" << Dockerfile
+FROM docker.io/library/alpine:edge AS prepare
+
+RUN apk add perl-utils build-base perl-dev curl jq perl-doc ncurses-terminfo-base\
+ && PERL_MM_USE_DEFAULT=1 cpan\
+ Crypt::Rijndael\
+ Term::ReadKey\
+ Sort::Naturally\
+ File::KeePass\
+ Term::ShellUI\
+ Clone\
+ Term::ReadLine::Perl
+
+ENV ADDFILES="/usr/local/lib/perl5/site_perl\
+ /usr/local/share/perl5/site_perl\
+ /usr/share/perl5/core_perl/pod/perldiag.pod"
+
+RUN curl -vL https://raw.githubusercontent.com/kran0/tinyimages/master/apkextractor.sh -o /apkinstractor.sh\
+ && sh /apkinstractor.sh busybox-binsh
+
+RUN printf 'url %s\noutput %s'\
+    $(curl -vL https://sourceforge.net/projects/kpcli/best_release.json | jq -r '.platform_releases.linux.url')\
+    /target/kpcli.pl\
+ | curl -vLK -
+
+FROM docker.io/kran0/tiny:perl
+COPY --from=prepare /target /
+CMD [ "/kpcli.pl" ]
+Dockerfile
+
+SECRET_DIR="${HOME}/Documents/supersecret"
+WORKDIR="/kphome" # working directory inside the container
+
+#Backup
+XZ_OPT=9 tar cvJC ${SECRET_DIR} -f "${SECRET_DIR}/backup-$(date +%s).txz" "database.kdb" "keyfile.key" &
+
+#Run
+exec podman run -it --rm\
+ -e HOME="${WORKDIR}"\
+ -w "${WORKDIR}"\
+ -v "${SECRET_DIR}/database.kdb":"${WORKDIR}/database.kdb"\
+ -v "${SECRET_DIR}/keyfile.key":"${WORKDIR}/keyfile.key:ro"\
+ -v "${SECRET_DIR}/.kpcli-history":"${WORKDIR}/.kpcli-history:ro"\
+ "${IMAGENAME}"

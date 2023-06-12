@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+if [[ "$-" =~ e ]] # set -e special addon
+then
+ trap 'tail ${COMMANDTRACE_HEAD_ARGS:---lines 10} <<< "${__COMMANDTRACE}
+ ^--- The error is here!" > /dev/stderr' ERR
+ __COMMANDTRACE= #Init trace
+ trap '__COMMANDTRACE="${__COMMANDTRACE:-init}
+${BASH_COMMAND:-(Empty BASH_COMMAND)} # Line: ${LINENO}, return code: ${?}"' DEBUG
+fi
+

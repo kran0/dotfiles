@@ -1,0 +1,14 @@
+#!/bin/sh
+
+TEXT=$*
+TEXTSELECT=(
+ "$(sensors --no-adapter | sed -e 's/(.*//')"
+ "$(echo 'This system is running since' ;uptime --since)"
+ "$(echo 'This system is ' ;uptime --pretty)"
+ "$(uname -a)"
+ "$(echo 'I am '; whoami)"
+ )
+[ "$1" == "" ] && TEXT=${TEXTSELECT[RANDOM%${#TEXTSELECT[@]}]}
+
+exec podman run -it --rm -e TERM="${TERM}" docker.io/mpepping/ponysay:latest "$TEXT"
+read -n 1 -s

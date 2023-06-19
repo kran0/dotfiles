@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export GOPATH="${HOME}/go/bin/"
-export PATH="${PATH}:${HOME}/go/bin/"
-/opt/sublime_text/sublime_text &

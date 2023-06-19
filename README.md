@@ -18,7 +18,7 @@ dnf install\
 dnf install\
     ansible dia firefox go libreoffice lm_sensors mc mpv nmap-ncat openssh\
     podman podman-compose psmisc pulseaudio-module-bluetooth remmina remmina-*\
-    sublime-text telegram-desktop tigervnc virt-manager xclip x11vnc
+    telegram-desktop tigervnc virt-manager xclip x11vnc
 
 # Main depencies
 dnf install\

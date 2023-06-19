@@ -1,8 +1,0 @@
-[
-	{ "keys": ["super+p"], "command": "show_overlay", "args": {"overlay": "command_palette"} },
-    { 
-        "keys": ["ctrl+alt+t"], "command": "terminus_open", "args": {
-            "cwd": "${file_path:${folder}}"
-        }
-    }
-]

@@ -1,0 +1,25 @@
+#!/bin/make -ef
+
+.PHONY: build-test-run
+
+CONTAINER_ENGINE ?= podman
+IMAGE_NAME       ?= test:latest
+CONTAINERFILE    ?= 'FROM hello:latest'
+BUILD_CONTEXT    ?= -f -
+
+RUN_CONTEXT      ?= -i --rm
+RUN_COMMAND      ?=
+TEST_CONTEXT     ?= -d --rm
+TEST_COMMAND     ?=
+
+
+build-test-run: build test execute
+
+build:
+	${CONTAINER_ENGINE} build ${BUILD_CONTEXT} -t ${IMAGE_NAME} <<< "$${CONTAINERFILE}"
+
+test:
+	timeout 10 ${CONTAINER_ENGINE} run ${TEST_CONTEXT} ${IMAGE_NAME} ${TEST_COMMAND}
+
+execute:
+	exec ${CONTAINER_ENGINE} run ${RUN_CONTEXT} ${IMAGE_NAME} $${RUN_COMMAND}

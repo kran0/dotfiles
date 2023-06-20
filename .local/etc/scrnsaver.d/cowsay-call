@@ -1,22 +1,5 @@
 #!/bin/sh
 
-IMAGENAME="${IMAGENAME:-cowsay:latest}"
-podman build -f - -t "${IMAGENAME}" << Dockerfile
-FROM docker.io/library/alpine:edge AS prepare
-
-RUN apk add git perl
-RUN git clone https://github.com/tnalpgge/rank-amateur-cowsay.git /cowsay-repo
-RUN mkdir -vp /cowsay\
- && cd /cowsay-repo\
- && ./install.sh /cowsay
-
-RUN rm -rvf /cowsay/man
-
-FROM docker.io/kran0/tiny:perl
-COPY --from=prepare /cowsay /cowsay
-CMD /cowsay/bin/cowsay
-Dockerfile
-
 TEXT=$*
 TEXTSELECT=(
  "$(sensors --no-adapter | sed -e 's/(.*//')"
@@ -27,11 +10,28 @@ TEXTSELECT=(
  )
 [ "$1" == "" ] && TEXT=${TEXTSELECT[RANDOM%${#TEXTSELECT[@]}]}
 
-MODE=( -b -d -g -p -s -t -w -y )
-MODE="${MODE[RANDOM%${#MODE[@]}]}"
-
 ACTION=( /cowsay/bin/cowsay /cowsay/bin/cowthink )
 ACTION="${ACTION[RANDOM%${#ACTION[@]}]}"
 
-exec podman run -it --rm -e TERM="${TERM}" "${IMAGENAME}" $ACTION -W 77 $MODE "$TEXT"
-read -n 1 -s
+MODE=( -b -d -g -p -s -t -w -y )
+MODE="${MODE[RANDOM%${#MODE[@]}]}"
+
+exec container-build-run\
+ IMAGE_NAME="cowsay:latest"\
+ CONTAINERFILE='FROM docker.io/library/alpine:edge AS prepare
+
+RUN apk add git perl
+RUN git clone https://github.com/tnalpgge/rank-amateur-cowsay.git /cowsay-repo
+RUN mkdir -vp /cowsay\
+ && cd /cowsay-repo\
+ && ./install.sh /cowsay
+
+RUN rm -rvf /cowsay/man
+
+FROM docker.io/library/alpine:edge
+RUN apk add --no-cache perl
+COPY --from=prepare /cowsay /cowsay
+CMD [ "/cowsay/bin/cowsay" ]
+'\
+ RUN_CONTEXT="-it --rm -e TERM=\"${TERM}\""\
+ RUN_COMMAND="${ACTION} -W 77 ${MODE} \"${TEXT}\""

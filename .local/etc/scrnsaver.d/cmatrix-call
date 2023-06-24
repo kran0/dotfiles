@@ -1,5 +1,5 @@
 #!/bin/sh
 
-#exec cmatrix -abfsu 10
-exec podman run -it --rm docker.io/kran0/tiny:cmatrix -abfsu 10
+PODMAN_RUN_ARGS='-it --rm'\
+ exec run-in-container cmatrix -abfsu 10
 

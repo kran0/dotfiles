@@ -10,5 +10,7 @@ TEXTSELECT=(
  )
 [ "$1" == "" ] && TEXT=${TEXTSELECT[RANDOM%${#TEXTSELECT[@]}]}
 
-exec podman run -it --rm -e TERM="${TERM}" docker.io/mpepping/ponysay:latest "$TEXT"
+
+PODMAN_RUN_ARGS="-it --rm -e TERM=${TERM}"\
+ exec run-in-container docker.io/mpepping/ponysay:latest "$TEXT"
 read -n 1 -s

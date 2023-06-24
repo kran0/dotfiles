@@ -2,5 +2,5 @@
 
 URLS=( https://wttr.in/tomsk https://wttr.in/moscow https://wttr.in/Moon )
 
-podman run -it --rm docker.io/kran0/tiny:curl --silent --insecure "${URLS[RANDOM%${#URLS[@]}]}" | head --lines=-2
+run-in-container curl --silent --insecure "${URLS[RANDOM%${#URLS[@]}]}" | head --lines=-2
 read -n 1 -s

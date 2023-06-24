@@ -1,0 +1,47 @@
+#!/bin/sh -ex
+
+# USAGE: ln -s run-in-container <tool>
+# And run tool after that as
+
+# ENVIRONMENT:
+#  PODMAN=podman|docker|etc - command-line tool for managing containers
+#  PODMAN_RUN_ARGS - any args for podman run command
+
+# Set tool name
+case "${0##*/}" in # basename $0, removing all before /
+ 'run-in-container' ) readonly __TOOLNAME="${1}"; shift ;;
+ *                  ) readonly __TOOLNAME="${0##*/}" ;;
+esac
+
+# Set basic run aliases
+alias tiny='${__EXEC}${PODMAN:-podman} run ${PODMAN_RUN_ARGS:--i --rm} docker.io/kran0/tiny:${__TOOLNAME}'
+alias busybox='${__EXEC}${PODMAN:-podman} run ${PODMAN_RUN_ARGS:--i --rm} docker.io/library/busybox:latest'
+alias common='${__EXEC}${PODMAN:-podman} run ${PODMAN_RUN_ARGS:--i --rm} ${__TOOLNAME}'
+
+__is_local_image(){
+ ${PODMAN:-podman} images --format='{{.Repository}}:{{.Tag}}' | grep -q "${1}$" && return 0
+ return ${?:-1}
+}
+__is_common_image(){ # Find image in registries
+ ${PODMAN:-podman} manifest inspect "${1}" 2>/dev/null >/dev/null && return 0
+ return ${?:-1}
+}
+
+_tinyimages_has() { # Find image in kran0/tiny
+ __is_local_image "docker.io/kran0/tiny:${1}" && return 0
+ __is_common_image "docker.io/kran0/tiny:${1}" && return 0
+ return ${?:-1}
+}
+
+_busybox_has() { # Find tool in busybox
+ local PODMAN_RUN_ARGS=
+ busybox busybox | busybox grep -Eoq "[[:space:]](${1})([,]|$)"
+ return ${?:-1}
+}
+
+export __EXEC='exec '
+_tinyimages_has ${__TOOLNAME} && tiny "${@}"
+_busybox_has ${__TOOLNAME} && busybox ${__TOOLNAME} "${@}"
+__is_local_image ${__TOOLNAME} && common "${@}"
+__is_common_image ${__TOOLNAME} && common "${@}"
+unset __EXEC

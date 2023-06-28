@@ -1,25 +1,73 @@
-#!/bin/make -ef
+#!/bin/sh
 
-.PHONY: build-test-run
+{ # Start redirect stdout to stderr
+case "${1}" in
+ -h|--help ) echo 'This script is not designed to be run directly.
+It should be run as the shebang startup script instead.
+'; exec ${0} --example;
+   exit 1 ;;
+ --example ) echo 'For example, automatically build and run cal:
+---
+#!/usr/bin/env '${0##*/}'
 
-CONTAINER_ENGINE ?= podman
-IMAGE_NAME       ?= test:latest
-CONTAINERFILE    ?= 'FROM hello:latest'
-BUILD_CONTEXT    ?= -f -
+# containerfile-build-run directives
+## This is a comment
+## This block must start with: "^# containerfile-build-run directives"
+# IMAGE_NAME=test-busybox:latest
+# BUILD_ARGUMENTS=--build-arg=BUSYBOX_TAG=glibc
+# TESTS_CMD=2023
+# START_CMD=2024
+## Get full list of containerfile-build-run directives with: envsubst --variables "$(cat '${0}')"
 
-RUN_CONTEXT      ?= -i --rm
-RUN_COMMAND      ?=
-TEST_CONTEXT     ?= -d --rm
-TEST_COMMAND     ?=
+# IMAGE_NAME=test:latest
+## BUILD_COMMANDLINE_OVERRIDE=build -f ${CONTAINERFILE} -t ${IMAGE_NAME}
 
+ARG BUSYBOX_TAG=latest
 
-build-test-run: build test execute
+FROM busybox:${BUSYBOX_TAG}
+ENTRYPOINT [ "/bin/busybox", "cal" ]
+CMD [ "--help" ]';
+      exit 0;;
+ -f ) echo "Wrong args. Use ${0} --help to get help";
+      exit 1 ;;
+ -  ) readonly CONTAINEREMPFILE=$(mktemp --suffix=container-build-run-Containerfile);
+      timeout 10 cat > ${CONTAINEREMPFILE};
+      shift
+      DELETE_CONTAINERFILE_AFTER_BUILD="${CONTAINEREMPFILE}" exec ${0} ${CONTAINEREMPFILE} ${@};
+      exit 1;;
+esac
 
-build:
-	[ ! -z "${SKIP_BUILD}" ] || ${CONTAINER_ENGINE} build ${BUILD_CONTEXT} -t ${IMAGE_NAME} <<< "$${CONTAINERFILE}"
+readonly CONTAINERFILE="${1}"
+shift
+[ ! -z "${CONTAINERFILE}" ] || exit ${!:-1} # if Containerfile is set
+[ -f "${CONTAINERFILE}" ]   || exit ${!:-1} # if Containerfile is a file
 
-test:
-	[ ! -z "${SKIP_TEST}" ]  || ${CONTAINER_ENGINE} run ${TEST_CONTEXT} ${IMAGE_NAME} $${TEST_COMMAND}
+# Read containerfile-build-run directives
+IFS=$'\n'
+# Sorry for the long line here
+# It does select containerfile-build-run directives and skipping comments
+readonly -- $(sed -ne '/^# containerfile-build-run directives/,/^$/{/#[[:space:]]*[A-Z=]/{/^#[[:space:]]*[^#]/s/^[#[:space:]]*//p}}' "${CONTAINERFILE}") #"'
+unset IFS
 
-execute:
-	[ ! -z "${SKIP_RUN}" ]   || exec ${CONTAINER_ENGINE} run ${RUN_CONTEXT} ${IMAGE_NAME} $${RUN_COMMAND}
+[ ! -z ${IMAGE_NAME} ] || exit ${!:-1}      # if Image Name is set
+
+# Try to avoid build and test
+${CONTAINER_ENGINE:-podman} images ${IMAGE_NAME} --format='{{.Repository}}:{{.Tag}}'\
+ | grep -q "${IMAGE_NAME}$"\
+ && readonly JUST_RUN=true
+
+[ ! -z "${SKIP_BUILD:-${JUST_RUN}}" ]\
+ || ${CONTAINER_ENGINE:-podman} build ${BUILD_ARGUMENTS} -f ${CONTAINERFILE} -t ${IMAGE_NAME}\
+ || exit ${!:-1}
+
+[ "${DELETE_CONTAINERFILE_AFTER_BUILD}" '==' "${CONTAINERFILE}" ] && rm -v "${CONTAINERFILE}"
+
+[ ! -z "${SKIP_TESTS:-${JUST_RUN}}" ]\
+ || timeout ${TESTS_TIMEOUTARGS:---preserve-status --kill-after=10s --verbose 5s}\
+    ${CONTAINER_ENGINE:-podman} run ${TESTS_ARGUMENTS:---interactive} ${IMAGE_NAME} ${TESTS_CMD}\
+ || exit ${!:-1}
+
+} 1>&2 # # Finish redirect stdout to stderr
+
+[ ! -z "${SKIP_START}" ]\
+ || exec ${CONTAINER_ENGINE:-podman} run ${START_ARGUMENTS:---interactive --tty} ${IMAGE_NAME} ${@:-${START_CMD}}

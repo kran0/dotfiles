@@ -1,0 +1,40 @@
+#!/usr/bin/env container-build-run
+
+# containerfile-build-run directives
+# IMAGE_NAME=astra:2.12.46
+# TESTS_CMD=/bin/true
+
+ARG WORK_IMAGE=docker.io/bashkirtsevich/astra-linux:latest # any previously built astra distro
+FROM ${WORK_IMAGE} AS prepare
+
+#Astra Linux Special Edition x.7 https://wiki.astralinux.ru/x/4gZ0CQ
+#Astra Linux Common Editon 2.12 https://wiki.astralinux.ru/x/5yB0CQ
+ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/2.12.45/repository
+RUN echo deb ${REPO_LINK} stable main contrib non-free > /etc/apt/sources.list
+
+RUN apt update\
+ && apt --fix-broken install\
+ && apt -y install --reinstall astra-version\
+ && apt -y dist-upgrade\
+ && apt -y --purge autoremove\
+ && apt -y auto-clean\
+ && apt -y clean
+
+RUN rm -rvf\
+ /usr/{{lib,share}/locale,{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive}\
+#  docs
+ /usr/share/{man,doc,info,gnome/help}\
+#  cracklib
+ /usr/share/cracklib\
+#  i18n
+ /usr/share/i18n\
+#  sln
+ /sbin/sln\
+#  ldconfig
+ /etc/ld.so.cache\
+ /var/cache/*/*
+
+FROM scratch
+
+COPY --from=prepare / /
+CMD [ "/bin/bash" ]

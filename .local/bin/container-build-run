@@ -64,7 +64,7 @@ ${CONTAINER_ENGINE:-podman} images ${IMAGE_NAME} --format='{{.Repository}}:{{.Ta
 
 [ ! -z "${SKIP_TESTS:-${JUST_RUN}}" ]\
  || timeout ${TESTS_TIMEOUTARGS:---preserve-status --kill-after=10s --verbose 5s}\
-    ${CONTAINER_ENGINE:-podman} run ${TESTS_ARGUMENTS:---interactive} ${IMAGE_NAME} ${TESTS_CMD}\
+    ${CONTAINER_ENGINE:-podman} run ${TESTS_ARGUMENTS:---interactive --rm} ${IMAGE_NAME} ${TESTS_CMD}\
  || exit ${!:-1}
 
 } 1>&2 # # Finish redirect stdout to stderr

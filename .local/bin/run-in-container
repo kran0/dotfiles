@@ -53,6 +53,8 @@ cat > "${CONTAINEREMPFILE}" << Containerfile
 
 # containerfile-build-run directives
 # IMAGE_NAME=tinybuild:${__TOOLNAME}
+# SKIP_TESTS=true
+# START_ARGUMENTS=${PODMAN_RUN_ARGS:--i --rm}
 
 FROM alpine:edge as apkextractor
 
@@ -61,7 +63,7 @@ RUN ash /apkextractor.sh ${__TOOLNAME}
 
 FROM scratch
 COPY --from=apkextractor /target /
-ENTRYPOINT [ /usr/bin/${__TOOLNAME} ]
+ENTRYPOINT [ "/usr/bin/${__TOOLNAME}" ]
 Containerfile
 
 DELETE_CONTAINERFILE_AFTER_BUILD="${CONTAINEREMPFILE}" exec container-build-run "${CONTAINEREMPFILE}" "${@}"

@@ -1,9 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env container-build-run
 
-exec container-build-run\
- SKIP_TEST=true\
- IMAGE_NAME="asciiquarium:latest"\
- CONTAINERFILE='FROM docker.io/library/alpine:edge AS prepare
+# containerfile-build-run directives
+# IMAGE_NAME=asciiquarium:latest
+# SKIP_TESTS=true
+# START_ARGUMENTS=-it --rm -e TERM=screen
+
+FROM docker.io/library/alpine:edge AS prepare
 
 RUN apk add perl-utils build-base ncurses-dev perl-dev git\
  && PERL_MM_USE_DEFAULT=1 cpan Term::Animation Curses
@@ -22,5 +24,3 @@ FROM docker.io/kran0/tiny:perl
 
 COPY --from=prepare /target /
 CMD [ "/asciiquarium" ]
-'\
- RUN_CONTEXT="-it --rm -e TERM=\"${TERM}\""

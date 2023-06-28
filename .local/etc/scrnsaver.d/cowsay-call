@@ -16,9 +16,13 @@ ACTION="${ACTION[RANDOM%${#ACTION[@]}]}"
 MODE=( -b -d -g -p -s -t -w -y )
 MODE="${MODE[RANDOM%${#MODE[@]}]}"
 
-exec container-build-run\
- IMAGE_NAME="cowsay:latest"\
- CONTAINERFILE='FROM docker.io/library/alpine:edge AS base
+exec container-build-run - ${ACTION} -W 77 ${MODE} "${TEXT}" << Containerfile
+
+# containerfile-build-run directives
+# IMAGE_NAME=cowsay:latest
+# START_ARGUMENTS=-i --rm -e TERM=${TERM}
+
+FROM docker.io/library/alpine:edge AS base
 RUN apk add --update --no-cache perl
 
 FROM base AS prepare
@@ -35,6 +39,4 @@ FROM base
 
 COPY --from=prepare /cowsay /cowsay
 CMD [ "/cowsay/bin/cowsay" ]
-'\
- RUN_CONTEXT="-it --rm -e TERM=\"${TERM}\""\
- RUN_COMMAND="${ACTION} -W 77 ${MODE} \"${TEXT}\""
+Containerfile

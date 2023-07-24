@@ -9,7 +9,7 @@ FROM ${WORK_IMAGE} AS prepare
 
 #Astra Linux Special Edition x.7 https://wiki.astralinux.ru/x/4gZ0CQ
 #Astra Linux Common Editon 2.12 https://wiki.astralinux.ru/x/5yB0CQ
-ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/2.12.45/repository
+ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/2.12.46/repository
 RUN echo deb ${REPO_LINK} stable main contrib non-free > /etc/apt/sources.list
 
 RUN apt update\

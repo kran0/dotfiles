@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 GIT_REPO="${REPO:-https://github.com/kran0/dotfiles.git}"
 CHECKOUT="${CHECKOUT:-master}"
@@ -13,36 +13,27 @@ function selectDifferent {
 }
 
 function interactCopy {
-(
- set +e
- tput -S <<COLOURS
-bold
-setaf 1
-COLOURS
- echo "          ${1}":
- tput setaf 0
-  diff --label LABEL "${2}" "${1}"
- tput sgr0
-  cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
-)
+ echo -e "\n          \033[1m${1}\033[0m:"
+ diff --minimal --color "${2}" "${1}" || true
+ cp --backup=numbered --interactive --verbose -- "${1}" "${2}"
 }
 
-pushd "${TEMP_DIR}" >/dev/null
+# main
 echo "Compare dotfiles with ${GIT_REPO} (${CHECKOUT})"
+pushd "${TEMP_DIR}" #>/dev/null
 
-(
- git init .
- git remote add -t \* -f origin "${GIT_REPO}"
- git checkout "${CHECKOUT}"
-) 1>/dev/null 2>/dev/null
+# checkout to current dir
+git init -q .
+git remote add -t \* -f origin "${GIT_REPO}"
+git checkout -q "${CHECKOUT}"
 
- IFS=$'\n'
- for pair in $(selectDifferent)
- do
-  interactCopy "${pair// and */}" "${pair//* and /}"
- done
+IFS=$'\n'
+for pair in $(selectDifferent)
+do
+ interactCopy "${pair// and */}" "${pair//* and /}"
+done
 
 popd >/dev/null
 
-# auto delete old copies.
- find "${DEST_DIR}" -mtime +255 -name '*~[0-9]*~' -exec rm {} \; 2>/dev/null
+# auto delete old copies
+find "${DEST_DIR}" -mtime +255 -name '*~[0-9]*~' -exec rm {} \; 2>/dev/null &

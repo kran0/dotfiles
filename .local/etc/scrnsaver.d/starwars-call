@@ -1,3 +1,0 @@
-#!/bin/sh
-
-exec run-in-container telnet towel.blinkenlights.nl

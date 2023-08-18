@@ -14,5 +14,3 @@ then
 fi
 
 export PATH=${PATH}:${HOME}/.local/bin
-#export VISUAL="vim -u $HOME/.vimrc"
-#export EDITOR="$VISUAL"

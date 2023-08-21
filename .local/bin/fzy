@@ -1,0 +1,20 @@
+#!/usr/bin/env container-build-run
+
+FROM docker.io/library/alpine:edge AS prepare
+
+# containerfile-build-run directives
+# IMAGE_NAME=fzy:latest
+# SKIP_TESTS=true
+# TESTS_COMMAND=--help
+
+RUN apk add build-base git
+RUN git clone https://github.com/jhawthorn/fzy.git /fzf-source
+RUN cd /fzf-source\
+ && PREFIX=/target make install
+
+RUN echo -e '#!/bin/busybox ash\n\necho "${@}" | exec fzy' > /target/bin/entrypoint.sh\
+ && chmod +x /target/bin/entrypoint.sh
+
+FROM docker.io/library/alpine:edge
+COPY --from=prepare /target/bin /bin
+ENTRYPOINT [ "/bin/entrypoint.sh" ]

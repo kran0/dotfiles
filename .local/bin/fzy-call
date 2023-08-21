@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+START_ARGUMENTS="-it --rm -e TERM=${TERM}" exec fzy "${@}"

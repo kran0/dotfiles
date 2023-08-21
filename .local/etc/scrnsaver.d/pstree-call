@@ -1,5 +1,5 @@
 #!/bin/sh
 
 ROOTPID=$(screen -list | sed -ne '/tabber/{s/^[[:space:]]*\([0-9]*\).*$/\1/p}') #'
-pstree -ahnst ${ROOTPID}
+PODMAN_RUN_ARGS='-i --ipc=host --pid=host' run-in-container pstree -p ${ROOTPID}
 read -n 1 -s

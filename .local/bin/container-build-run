@@ -70,4 +70,4 @@ ${CONTAINER_ENGINE:-podman} images ${IMAGE_NAME} --format='{{.Repository}}:{{.Ta
 } 1>&2 # # Finish redirect stdout to stderr
 
 [ ! -z "${SKIP_START}" ]\
- || exec ${CONTAINER_ENGINE:-podman} run ${START_ARGUMENTS:---interactive --tty --rm} ${IMAGE_NAME} ${@:-${START_CMD}}
+ || exec ${CONTAINER_ENGINE:-podman} run ${START_ARGUMENTS:---interactive --tty --rm} ${IMAGE_NAME} "${@:-${START_CMD}}"

@@ -16,8 +16,8 @@ dnf install\
 
 # Weak depencies
 dnf install\
-    ansible dia firefox go libreoffice lm_sensors make mc mpv nmap-ncat openssh\
-    podman podman-compose psmisc pulseaudio-module-bluetooth remmina remmina-*\
+    ansible firefox libreoffice make mc openssh\
+    podman podman-compose psmisc pulseaudio-module-bluetooth\
     telegram-desktop tigervnc virt-manager xclip x11vnc
 
 # Main depencies

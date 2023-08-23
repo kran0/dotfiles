@@ -3,6 +3,7 @@
 TEXT=$*
 TEXTSELECT=(
  "$(run-in-container sensors --no-adapter | sed -e 's/(.*//')"
+ "$(run-in-container fortune)"
  "$(echo 'This system is running since' ;uptime --since)"
  "$(echo 'This system is ' ;uptime --pretty)"
  "$(uname -a)"

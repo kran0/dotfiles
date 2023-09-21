@@ -1,7 +1,7 @@
 #!/usr/bin/env container-build-run
 
 # containerfile-build-run directives
-# IMAGE_NAME=astra:2.12
+# IMAGE_NAME=astra-ce:2.12
 # TESTS_CMD=/bin/true
 
 ARG WORK_IMAGE=docker.io/bashkirtsevich/astra-linux:latest # any previously built astra distro
@@ -15,8 +15,8 @@ ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/
 
 RUN printf\
  "deb ${REPO_LINK}%s/repository stable main contrib non-free\n"\
- $(lftp -e 'cls --sort=name -1aqD; exit' ${REPO_LINK} | sed -ne '$s/\/$//p')\
- > /sources.list
+ $(lftp -e 'cls -1 --quiet --sortnocase --sort=name 2.12*; exit' ${REPO_LINK} | sed -ne '$s/\/$//p')\
+ | tee /sources.list
 
 FROM ${WORK_IMAGE} AS prepare
 

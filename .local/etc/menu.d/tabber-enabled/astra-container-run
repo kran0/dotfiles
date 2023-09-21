@@ -1,50 +1,45 @@
 #!/usr/bin/env container-build-run
 
 # containerfile-build-run directives
+# BUILD_ARGUMENTS=--build-arg=REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/
 # IMAGE_NAME=astra-ce:2.12
 # TESTS_CMD=/bin/true
 
 ARG WORK_IMAGE=docker.io/bashkirtsevich/astra-linux:latest # any previously built astra distro
-FROM alpine:edge AS sources
+FROM alpine:latest AS prepare
 
-RUN apk add --update lftp
+RUN apk add --update lftp fakeroot debootstrap
 
 #Astra Linux Special Edition x.7 https://wiki.astralinux.ru/x/4gZ0CQ
 #Astra Linux Common Editon 2.12 https://wiki.astralinux.ru/x/5yB0CQ
-ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/
+ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/123
 
-RUN printf\
- "deb ${REPO_LINK}%s/repository stable main contrib non-free\n"\
- $(lftp -e 'cls -1 --quiet --sortnocase --sort=name 2.12*; exit' ${REPO_LINK} | sed -ne '$s/\/$//p')\
- | tee /sources.list
+RUN set -x && fakeroot debootstrap\
+ --no-check-gpg\
+ --variant=fakechroot\
+ --variant=minbase\
+ --components=main,contrib,non-free\
+ --exclude=usr-is-merged\
+ "${CODENAME:-stable}"\
+ /target\
+ "${REPO_LINK}$(lftp -e 'cls -1 --quiet --sortnocase --sort=name 2.12*; exit' ${REPO_LINK} | sed -ne '$s/\/$//p')/repository"
 
-FROM ${WORK_IMAGE} AS prepare
-
-COPY --from=sources /sources.list /etc/apt/sources.list
-
-RUN apt update\
- && apt --fix-broken install\
- && apt -y install --reinstall astra-version\
- && apt -y dist-upgrade\
- && apt -y --purge autoremove\
- && apt -y auto-clean\
- && apt -y clean
-
-RUN rm -rvf\
- /usr/{{lib,share}/locale,{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive}\
+RUN cd /target\
+&& rm -rvf\
+ ./usr/{{lib,share}/locale,{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive}\
 #  docs
- /usr/share/{man,doc,info,gnome/help}\
+ ./usr/share/{man,doc,info,gnome/help}\
 #  cracklib
- /usr/share/cracklib\
+ ./usr/share/cracklib\
 #  i18n
- /usr/share/i18n\
+ ./usr/share/i18n\
 #  sln
- /sbin/sln\
+ ./sbin/sln\
 #  ldconfig
- /etc/ld.so.cache\
- /var/cache/*/*
+ ./etc/ld.so.cache\
+ ./var/cache/*/*
 
 FROM scratch
 
-COPY --from=prepare / /
+COPY --from=prepare /target /
 CMD [ "/bin/bash" ]

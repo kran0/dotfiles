@@ -12,7 +12,7 @@ RUN apk add --update lftp fakeroot debootstrap
 
 #Astra Linux Special Edition x.7 https://wiki.astralinux.ru/x/4gZ0CQ
 #Astra Linux Common Editon 2.12 https://wiki.astralinux.ru/x/5yB0CQ
-ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/123
+ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/
 
 RUN set -x && fakeroot debootstrap\
  --no-check-gpg\

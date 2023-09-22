@@ -20,7 +20,7 @@ case "$(( $RANDOM % 2 ))" in
 # containerfile-build-run directives
 # IMAGE_NAME=cowsay:latest
 # START_ARGUMENTS=-i --rm -e TERM=${TERM}
-# SKIP_TESTS=true
+# TESTS_CMD=/cowsay/bin/cowsay Test
 
 FROM docker.io/library/alpine:edge AS base
 RUN apk add --update --no-cache perl

@@ -19,6 +19,9 @@ RUN set -x && fakeroot debootstrap\
  --variant=fakechroot\
  --variant=minbase\
  --components=main,contrib,non-free\
+# This exclude is actually a bug of minbase package contents or debootstrap version
+# TODO: remove this exclude after debootstrap update
+# FIXME: better find out the main reason of the bug and report it
  --exclude=usr-is-merged\
  "${CODENAME:-stable}"\
  /target\

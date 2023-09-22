@@ -5,7 +5,6 @@
 # IMAGE_NAME=astra-ce:2.12
 # TESTS_CMD=/bin/true
 
-ARG WORK_IMAGE=docker.io/bashkirtsevich/astra-linux:latest # any previously built astra distro
 FROM alpine:latest AS prepare
 
 RUN apk add --update lftp fakeroot debootstrap

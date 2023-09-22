@@ -67,10 +67,11 @@ ${CONTAINER_ENGINE:-podman} images ${IMAGE_NAME} --format='{{.Repository}}:{{.Ta
     ${CONTAINER_ENGINE:-podman} run ${TESTS_ARGUMENTS:---interactive --rm} ${IMAGE_NAME}-build ${TESTS_CMD}\
  || exit ${!:-1}
 
-} 1>&2 # # Finish redirect stdout to stderr
-
+# Tag the image, rmi build-image
 ${CONTAINER_ENGINE:-podman} tag ${IMAGE_NAME}-build ${IMAGE_NAME} || exit ${!:-1}
 ${CONTAINER_ENGINE:-podman} rmi ${IMAGE_NAME}-build || exit ${!:-1}
+
+} 1>&2 # # Finish redirect stdout to stderr
 
 [ ! -z "${SKIP_START}" ]\
  || exec ${CONTAINER_ENGINE:-podman} run ${START_ARGUMENTS:---interactive --tty --rm} ${IMAGE_NAME} ${@:-${START_CMD}}

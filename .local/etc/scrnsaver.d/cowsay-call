@@ -1,27 +1,26 @@
 #!/bin/sh
 
-TEXT=$*
-TEXTSELECT=(
- "$(run-in-container sensors --no-adapter | sed -e 's/(.*//')"
- "$(run-in-container fortune)"
- "$(echo 'This system is running since' ;uptime --since)"
- "$(echo 'This system is ' ;uptime --pretty)"
- "$(uname -a)"
- "$(echo 'I am '; whoami)"
- )
-[ "$1" == "" ] && TEXT=${TEXTSELECT[RANDOM%${#TEXTSELECT[@]}]}
+readonly TEXT=${*:-$(case $(($RANDOM % 5)) in
+  '0' ) run-in-container sensors --no-adapter;;
+  '1' ) run-in-container fortune;;
+  '2' ) echo 'This system is running since' ;uptime --since;;
+  '3' ) echo 'This system is ' ;uptime --pretty;;
+  '4' ) uname -a;;
+  '5' ) echo 'I am '; whoami;;
+  * ) echo "Error in _textselect. Nothing is selected!";;
+ esac
+)}
 
-ACTION=( /cowsay/bin/cowsay /cowsay/bin/cowthink )
-ACTION="${ACTION[RANDOM%${#ACTION[@]}]}"
-
-MODE=( -b -d -g -p -s -t -w -y )
-MODE="${MODE[RANDOM%${#MODE[@]}]}"
-
-exec container-build-run - ${ACTION} -W 77 ${MODE} "${TEXT}" << Containerfile
+case "$(( $RANDOM % 2 + 1 ))" in
+ '1' ) PODMAN_RUN_ARGS="-it --rm -e TERM=${TERM}" exec run-in-container docker.io/mpepping/ponysay:latest "$TEXT";;
+ '2' ) ACTION=( /cowsay/bin/cowsay /cowsay/bin/cowthink );
+       MODE=( -b -d -g -p -s -t -w -y );
+       exec container-build-run - "${ACTION[RANDOM%${#ACTION[@]}]}" -W 77 "${MODE[RANDOM%${#MODE[@]}]}" "${TEXT}" << Containerfile
 
 # containerfile-build-run directives
 # IMAGE_NAME=cowsay:latest
 # START_ARGUMENTS=-i --rm -e TERM=${TERM}
+# SKIP_TESTS=true
 
 FROM docker.io/library/alpine:edge AS base
 RUN apk add --update --no-cache perl
@@ -41,3 +40,5 @@ FROM base
 COPY --from=prepare /cowsay /cowsay
 CMD [ "/cowsay/bin/cowsay" ]
 Containerfile
+;;
+esac

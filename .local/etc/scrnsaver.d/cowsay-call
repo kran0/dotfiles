@@ -11,9 +11,9 @@ readonly TEXT=${*:-$(case $(($RANDOM % 5)) in
  esac
 )}
 
-case "$(( $RANDOM % 2 + 1 ))" in
- '1' ) PODMAN_RUN_ARGS="-it --rm -e TERM=${TERM}" exec run-in-container docker.io/mpepping/ponysay:latest "$TEXT";;
- '2' ) ACTION=( /cowsay/bin/cowsay /cowsay/bin/cowthink );
+case "$(( $RANDOM % 2 ))" in
+ '0' ) PODMAN_RUN_ARGS="-it --rm -e TERM=${TERM}" exec run-in-container docker.io/mpepping/ponysay:latest "$TEXT";;
+ '1' ) ACTION=( /cowsay/bin/cowsay /cowsay/bin/cowthink );
        MODE=( -b -d -g -p -s -t -w -y );
        exec container-build-run - "${ACTION[RANDOM%${#ACTION[@]}]}" -W 77 "${MODE[RANDOM%${#MODE[@]}]}" "${TEXT}" << Containerfile
 

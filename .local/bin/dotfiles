@@ -1,10 +1,10 @@
 #!/bin/sh -e
 
-GIT_REPO="${REPO:-https://github.com/kran0/dotfiles.git}"
-CHECKOUT="${CHECKOUT:-master}"
-DEST_DIR="${DEST_DIR:-${HOME}}"
+readonly GIT_REPO="${REPO:-https://github.com/kran0/dotfiles.git}"
+readonly CHECKOUT="${CHECKOUT:-master}"
+readonly DEST_DIR="${DEST_DIR:-${HOME}}"
 
-TEMP_DIR="$(mktemp --directory)"
+readonly TEMP_DIR="$(mktemp --directory)"
 trap "rm -rf ${TEMP_DIR}" EXIT
 
 function selectDifferent {
@@ -36,4 +36,4 @@ done
 popd >/dev/null
 
 # auto delete old copies
-find "${DEST_DIR}" -mtime +255 -name '*~[0-9]*~' -exec rm {} \; 2>/dev/null &
+find "${DEST_DIR}" -mtime +${MAX_MTIME:-255} -name '*~[0-9]*~' -exec rm -v {} \; 2>/dev/null &

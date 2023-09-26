@@ -57,19 +57,19 @@ ${CONTAINER_ENGINE:-podman} images ${IMAGE_NAME} --format='{{.Repository}}:{{.Ta
  && readonly JUST_RUN=true
 
 [ ! -z "${SKIP_BUILD:-${JUST_RUN}}" ]\
- || ${CONTAINER_ENGINE:-podman} build ${BUILD_ARGUMENTS} -f ${CONTAINERFILE} -t ${IMAGE_NAME}-build\
+ || ${CONTAINER_ENGINE:-podman} build ${BUILD_ARGUMENTS} -f ${CONTAINERFILE} -t ${IMAGE_NAME}\
  || exit ${!:-1}
 
 [ "${DELETE_CONTAINERFILE_AFTER_BUILD}" '==' "${CONTAINERFILE}" ] && rm -v "${CONTAINERFILE}"
 
 [ ! -z "${SKIP_TESTS:-${JUST_RUN}}" ]\
  || timeout ${TESTS_TIMEOUTARGS:---preserve-status --kill-after=10s --verbose 5s}\
-    ${CONTAINER_ENGINE:-podman} run ${TESTS_ARGUMENTS:---interactive --rm} ${IMAGE_NAME}-build ${TESTS_CMD}\
- || exit ${!:-1}
-
-# Tag the image, rmi build-image
-${CONTAINER_ENGINE:-podman} tag ${IMAGE_NAME}-build ${IMAGE_NAME} || exit ${!:-1}
-${CONTAINER_ENGINE:-podman} rmi ${IMAGE_NAME}-build || exit ${!:-1}
+    ${CONTAINER_ENGINE:-podman} run ${TESTS_ARGUMENTS:---interactive --rm} ${IMAGE_NAME} ${TESTS_CMD}\
+ || {
+  ${CONTAINER_ENGINE:-podman} tag ${IMAGE_NAME} ${IMAGE_NAME}-testfail || exit ${!:-1}
+  ${CONTAINER_ENGINE:-podman} rmi ${IMAGE_NAME} || exit ${!:-1}
+  exit 1
+ }
 
 } 1>&2 # # Finish redirect stdout to stderr
 

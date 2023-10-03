@@ -1,4 +1,0 @@
-#!/bin/sh
-
-PODMAN_RUN_ARGS='-it --rm --pid=host'\
- exec run-in-container btop --tty_off --utf-force

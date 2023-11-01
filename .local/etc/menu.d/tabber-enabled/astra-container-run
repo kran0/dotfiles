@@ -5,7 +5,7 @@
 # IMAGE_NAME=astra-ce:2.12
 # TESTS_CMD=/bin/true
 
-FROM alpine:latest AS prepare
+FROM alpine:edge AS prepare
 
 RUN apk add --update lftp fakeroot debootstrap
 

@@ -3,4 +3,4 @@
 URLS=( https://wttr.in/tomsk https://wttr.in/moscow https://wttr.in/Moon )
 
 run-in-container curl --silent --insecure "${URLS[RANDOM%${#URLS[@]}]}" | head --lines=-2
-read -n 1 -s
+sleep 10

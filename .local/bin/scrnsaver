@@ -5,4 +5,5 @@ SCRIPTS_D="${BASEDIR}/scrnsaver.d"
 PRGLIST=( ${HOME}/.local/etc/scrnsaver.d/* )
 
 # select and execute random executable
-exec "${PRGLIST[RANDOM%${#PRGLIST[@]}]}"
+(exec "${PRGLIST[RANDOM%${#PRGLIST[@]}]}")
+exec ${0} ${@}

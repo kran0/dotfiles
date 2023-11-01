@@ -1,0 +1,5 @@
+#!/bin/sh
+
+readonly ARGS=(-a -l -f)
+
+PODMAN_RUN_ARGS='-it --rm' exec run-in-container sl -e${ARGS[RANDOM%${#ARGS[@]}]}

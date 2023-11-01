@@ -60,7 +60,7 @@ ${CONTAINER_ENGINE:-podman} images ${IMAGE_NAME} --format='{{.Repository}}:{{.Ta
  || ${CONTAINER_ENGINE:-podman} build ${BUILD_ARGUMENTS} -f ${CONTAINERFILE} -t ${IMAGE_NAME}\
  || exit ${!:-1}
 
-[ "${DELETE_CONTAINERFILE_AFTER_BUILD}" '==' "${CONTAINERFILE}" ] && rm -v "${CONTAINERFILE}"
+[ "${DELETE_CONTAINERFILE_AFTER_BUILD}" '==' "${CONTAINERFILE}" ] && rm "${CONTAINERFILE}"
 
 [ ! -z "${SKIP_TESTS:-${JUST_RUN}}" ]\
  || timeout ${TESTS_TIMEOUTARGS:---preserve-status --kill-after=10s --verbose 5s}\

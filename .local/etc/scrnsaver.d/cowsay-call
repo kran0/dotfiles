@@ -1,12 +1,11 @@
 #!/bin/sh
 
-readonly TEXT=${*:-$(case $(( $RANDOM % 5 )) in
- '0' ) run-in-container sensors --no-adapter;;
- '1' ) run-in-container fortune;;
- '2' ) echo 'This system is running since' ;uptime --since;;
- '3' ) echo 'This system is ' ;uptime --pretty;;
- '4' ) uname -a;;
- '5' ) echo 'I am '; whoami;;
+readonly TEXT=${*:-$(case $(( $RANDOM % 13 )) in
+ 0  ) run-in-container sensors --no-adapter;;
+ 1|2|3|4|5|6|7|8|9|10 ) run-in-container fortune;; # x10 chances for fortune
+ 11 ) echo 'uptime: '; run-in-container uptime;;
+ 12 ) run-in-container uname -a;;
+ 13 ) echo 'I am '; echo PODMAN_RUN_ARGS="-it --rm -u ${UID}:${GID}" run-in-container whoami;;
  * ) echo "Error in _textselect. Nothing is selected!";;
 esac
 )}

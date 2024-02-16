@@ -1,14 +1,4 @@
 #!/bin/sh
 
-TIMEOUT="${1:-30}"
-#xset s activate
-sleep 1
-xset dpms force off
-sleep "${TIMEOUT}"
-
-xset dpms q\
- | tail --lines=1\
- | grep -q '^  Monitor is On$'\
- && exec ${0} "$(($TIMEOUT+30))"
-
+xscreensaver-command -lock
 bluetoothctl <<< "power off"

@@ -26,10 +26,11 @@ __is_local_image(){
 _is_common_image(){ # Find image in registries
  __is_local_image "docker.io/kran0/tiny:${1}" && return 0
  ${PODMAN:-podman} manifest inspect "${1}" 2>/dev/null >/dev/null && return 0
- if [[ ${1} '==' docker.io/* ]] || [[ ${1} '==' ghcr.io/* ]]
- then
-  __is_local_image "${1}" && return 0
- fi
+## Commented out because it is not working
+# if [[ ${1} '==' docker.io/* ]] || [[ ${1} '==' ghcr.io/* ]]
+# then
+#  __is_local_image "${1}" && return 0
+# fi
  return ${?:-1}
 }
 

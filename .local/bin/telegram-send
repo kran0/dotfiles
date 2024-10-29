@@ -1,0 +1,13 @@
+#!/usr/bin/env container-build-run
+
+# containerfile-build-run directives
+# IMAGE_NAME=telegram-send:alpine
+# SKIP_TESTS=false
+## START_ARGUMENTS=-it --rm -v /home/user/.config/telegram-send.conf:/root/.config/telegram-send.conf:ro
+
+FROM python:alpine
+
+RUN pip --no-cache-dir install --upgrade telegram-send
+
+ENTRYPOINT [ "/usr/local/bin/telegram-send" ]
+CMD [ "--help" ]

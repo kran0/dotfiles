@@ -1,30 +1,26 @@
 #!/usr/bin/env container-build-run
 
 # containerfile-build-run directives
-# BUILD_ARGUMENTS=--build-arg=REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/
-# IMAGE_NAME=astra-ce:2.12
+# BUILD_ARGUMENTS=--build-arg=BASEVER_BASEARCH=1.8_x86-64
+# IMAGE_NAME=astra-ce:1.8
 # TESTS_CMD=/bin/true
 
 FROM alpine:edge AS prepare
 
-RUN apk add --update lftp fakeroot debootstrap
+RUN apk add --update fakeroot debootstrap
 
-#Astra Linux Special Edition x.7 https://wiki.astralinux.ru/x/4gZ0CQ
-#Astra Linux Common Editon 2.12 https://wiki.astralinux.ru/x/5yB0CQ
-ARG REPO_LINK=http://dl.astralinux.ru/astra/frozen/2.12_x86-64/
+ARG BASEVER_BASEARCH=1.8_x86-64
 
 RUN set -x && fakeroot debootstrap\
  --no-check-gpg\
  --variant=fakechroot\
  --variant=minbase\
- --components=main,contrib,non-free\
-# This exclude is actually a bug of minbase package contents or debootstrap version
-# TODO: remove this exclude after debootstrap update
-# FIXME: better find out the main reason of the bug and report it
- --exclude=usr-is-merged\
+ --components=main,contrib,non-free,non-free-firmware\
  "${CODENAME:-stable}"\
  /target\
- "${REPO_LINK}$(lftp -e 'cls -1 --quiet --sortnocase --sort=name 2.12*; exit' ${REPO_LINK} | sed -ne '$s/\/$//p')/repository"
+ "https://download.astralinux.ru/astra/stable/${BASEVER_BASEARCH}/repository-main/"
+
+RUN sed -ie 's/^#deb /deb /' /target/etc/apt/sources.list
 
 RUN cd /target\
 && rm -rvf\

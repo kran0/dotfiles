@@ -17,11 +17,15 @@ RUN mkdir -vp /target\
  /usr/local/share/perl5/site_perl\
  | tar x -C /target
 
-RUN git clone --single-branch --branch objects_from_kirk https://github.com/driechers/asciiquarium.git /asciiquarium-source\
-#RUN git clone --single-branch --branch yellow_submarine https://github.com/driechers/asciiquarium.git /asciiquarium-source\
-#RUN git clone --single-branch --branch sword-fish https://github.com/robert1003/asciiquarium.git /asciiquarium-source\
-#RUN git clone https://github.com/cmatsuoka/asciiquarium.git /asciiquarium-source\
- && cp -v /asciiquarium-source/asciiquarium /asciiquarium-source/gpl.txt /target/
+RUN $(printf "git clone %s /asciiquarium-source\n"\
+ "https://github.com/Jmainguy/asciiquarium.git"\
+ "https://github.com/oliviaBahr/asciiquarium.git"\
+ "--single-branch --branch objects_from_kirk https://github.com/driechers/asciiquarium.git"\
+ "--single-branch --branch yellow_submarine https://github.com/driechers/asciiquarium.git"\
+ "--single-branch --branch sword-fish https://github.com/robert1003/asciiquarium.git"\
+ "https://github.com/cmatsuoka/asciiquarium.git"\
+ | shuf -n 1)\
+&& cp -v /asciiquarium-source/asciiquarium /asciiquarium-source/gpl.txt /target/
 
 FROM docker.io/kran0/tiny:perl
 

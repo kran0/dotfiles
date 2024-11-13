@@ -13,4 +13,4 @@ then
  . "${HOME}/.local/etc/ssh-agent-call"
 fi
 
-export PATH=${PATH}:${HOME}/.local/bin
+export PATH=${HOME}/.local/sbin:${PATH}:${HOME}/.local/bin
